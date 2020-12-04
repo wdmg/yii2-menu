@@ -30,7 +30,7 @@ class Module extends BaseModule
     /**
      * {@inheritdoc}
      */
-    public $defaultRoute = "default/index";
+    public $defaultRoute = "list/index";
 
     /**
      * @var string, the name of module
@@ -75,7 +75,7 @@ class Module extends BaseModule
         $items = [
             'label' => $this->name,
             'url' => [$this->routePrefix . '/'. $this->id],
-            'icon' => 'fa fa-fw fa-baby-carriage',
+            'icon' => 'fa fa-fw fa-stream',
             'active' => in_array(\Yii::$app->controller->module->id, [$this->id])
         ];
 

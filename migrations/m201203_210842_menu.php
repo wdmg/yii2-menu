@@ -37,11 +37,11 @@ class m201203_210842_menu extends Migration
 
         // If exist module `Users` set foreign key `created_by`, `updated_by` to `users.id`
         if (class_exists('\wdmg\users\models\Users')) {
-            $this->createIndex('{{%idx-menu_item-created}}','{{%menu}}', ['created_by'],false);
-            $this->createIndex('{{%idx-menu_item-updated}}','{{%menu}}', ['updated_by'],false);
+            $this->createIndex('{{%idx-menu-created}}','{{%menu}}', ['created_by'],false);
+            $this->createIndex('{{%idx-menu-updated}}','{{%menu}}', ['updated_by'],false);
             $userTable = \wdmg\users\models\Users::tableName();
             $this->addForeignKey(
-                'fk_menu_item_to_users1',
+                'fk_menu_to_users1',
                 '{{%menu}}',
                 'created_by',
                 $userTable,
@@ -50,7 +50,7 @@ class m201203_210842_menu extends Migration
                 'CASCADE'
             );
             $this->addForeignKey(
-                'fk_menu_item_to_users2',
+                'fk_menu_to_users2',
                 '{{%menu}}',
                 'updated_by',
                 $userTable,
@@ -70,16 +70,16 @@ class m201203_210842_menu extends Migration
         $this->dropIndex('{{%idx-menu}}', '{{%menu}}');
 
         if (class_exists('\wdmg\users\models\Users')) {
-            $this->dropIndex('{{%idx-menu_item-created}}', '{{%menu}}');
-            $this->dropIndex('{{%idx-menu_item-updated}}', '{{%menu}}');
+            $this->dropIndex('{{%idx-menu-created}}', '{{%menu}}');
+            $this->dropIndex('{{%idx-menu-updated}}', '{{%menu}}');
             $userTable = \wdmg\users\models\Users::tableName();
             if (!(Yii::$app->db->getTableSchema($userTable, true) === null)) {
                 $this->dropForeignKey(
-                    'fk_menu_item_to_users1',
+                    'fk_menu_to_users1',
                     '{{%menu}}'
                 );
                 $this->dropForeignKey(
-                    'fk_menu_item_to_users2',
+                    'fk_menu_to_users2',
                     '{{%menu}}'
                 );
             }

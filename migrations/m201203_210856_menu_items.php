@@ -24,7 +24,7 @@ class m201203_210856_menu_items extends Migration
             'menu_id' => $this->integer(11)->notNull(),
             'parent_id' => $this->integer(11)->null(),
 
-            'name' => $this->string(128)->notNull(),
+            'label' => $this->string(128)->notNull(),
             'title' => $this->string(255)->null(),
 
             'type' => $this->tinyInteger(1)->notNull()->defaultValue(1), // 1 - link, 2 - source
@@ -40,7 +40,7 @@ class m201203_210856_menu_items extends Migration
 
 
         // Setup foreign key to main menu
-        $this->createIndex('{{%idx-menu_item}}', '{{%menu_items}}', ['menu_id', 'name', 'type', 'url']);
+        $this->createIndex('{{%idx-menu_item}}', '{{%menu_items}}', ['menu_id', 'label', 'type', 'url']);
         $this->addForeignKey(
             'fk_menu_item',
             '{{%menu_items}}',

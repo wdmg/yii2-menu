@@ -9,7 +9,6 @@ use yii\helpers\ArrayHelper;
 use yii\helpers\Json;
 use yii\behaviors\TimestampBehavior;
 use yii\behaviors\BlameableBehavior;
-use yii\behaviors\SluggableBehavior;
 use wdmg\base\models\ActiveRecord;
 
 /**
@@ -18,7 +17,7 @@ use wdmg\base\models\ActiveRecord;
  * @property int $id
  * @property int $menu_id
  * @property int $parent_id
- * @property string $name
+ * @property string $label
  * @property string $title
  * @property int $type
  * @property string $url
@@ -59,13 +58,6 @@ class MenuItems extends ActiveRecord
                 ],
                 'value' => new Expression('NOW()'),
             ],
-            'sluggable' =>  [
-                'class' => SluggableBehavior::class,
-                'attribute' => ['title'],
-                'slugAttribute' => 'alias',
-                'skipOnEmpty' => true,
-                'immutable' => true
-            ],
             'blameable' =>  [
                 'class' => BlameableBehavior::class,
                 'createdByAttribute' => 'created_by',
@@ -82,12 +74,11 @@ class MenuItems extends ActiveRecord
     public function rules()
     {
         $rules = [
-            [['title', 'alias', 'status'], 'required'],
-            [['title', 'alias'], 'string', 'min' => 3, 'max' => 64],
-            ['description', 'string', 'max' => 255],
-            ['status', 'integer'],
-            ['status', 'in', 'range' => array_keys($this->getTypesList(false))],
-            ['alias', 'match', 'skipOnEmpty' => true, 'pattern' => '/^[A-Za-z0-9\-\_]+$/', 'message' => Yii::t('app/modules/menu','It allowed only Latin alphabet, numbers and the «-», «_» characters.')],
+            [['label', 'url', 'type'], 'required'],
+            ['label', 'string', 'min' => 3, 'max' => 128],
+            [['title', 'url'], 'string', 'max' => 255],
+            [['menu_id', 'parent_id', 'type'], 'integer'],
+            ['type', 'in', 'range' => array_keys($this->getTypesList(false))],
             [['created_at', 'updated_at'], 'safe'],
         ];
 

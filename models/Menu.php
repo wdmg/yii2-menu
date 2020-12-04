@@ -57,7 +57,7 @@ class Menu extends ActiveRecord
             ],
             'sluggable' =>  [
                 'class' => SluggableBehavior::class,
-                'attribute' => ['title'],
+                'attribute' => 'title',
                 'slugAttribute' => 'alias',
                 'skipOnEmpty' => true,
                 'immutable' => true
@@ -126,7 +126,7 @@ class Menu extends ActiveRecord
 
     public function getMenuItems($menu_id)
     {
-        return self::findModel($menu_id);
+        return MenuItems::find()->where(['menu_id' => $menu_id])->all();
     }
 
     /**
@@ -147,6 +147,28 @@ class Menu extends ActiveRecord
         ]);
 
         return $list;
+    }
+
+    /**
+     * @return object of \yii\db\ActiveQuery
+     */
+    public function getCreatedBy()
+    {
+        if (class_exists('\wdmg\users\models\Users'))
+            return $this->hasOne(\wdmg\users\models\Users::class, ['id' => 'created_by']);
+        else
+            return $this->created_by;
+    }
+
+    /**
+     * @return object of \yii\db\ActiveQuery
+     */
+    public function getUpdatedBy()
+    {
+        if (class_exists('\wdmg\users\models\Users'))
+            return $this->hasOne(\wdmg\users\models\Users::class, ['id' => 'updated_by']);
+        else
+            return $this->updated_by;
     }
 
     /**
