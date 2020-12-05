@@ -33,6 +33,19 @@ class Menu extends ActiveRecord
     const STATUS_DRAFT = 0;
     const STATUS_PUBLISHED = 1;
 
+    private $module;
+
+    /**
+     * {@inheritdoc}
+     */
+    public function init()
+    {
+        parent::init();
+        if (!$this->module = Yii::$app->getModule('admin/menu'))
+            $this->module = Yii::$app->getModule('menu');
+
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -125,14 +138,6 @@ class Menu extends ActiveRecord
         return parent::beforeSave($insert);
     }
 
-    public function getMenuItems($menu_id = null)
-    {
-        if ($menu_id)
-            return MenuItems::find()->where(['menu_id' => $menu_id])->all();
-        else
-            return MenuItems::find()->where(['menu_id' => $this->id])->all();
-    }
-
     /**
      * @return array
      */
@@ -193,5 +198,50 @@ class Menu extends ActiveRecord
         }
 
         return null;
+    }
+
+    public function getMenuItems($menu_id = null, $asJson = false)
+    {
+        if ($menu_id)
+            $items = MenuItems::find()->where(['menu_id' => $menu_id])->all();
+        else
+            $items = MenuItems::find()->where(['menu_id' => $this->id])->all();
+
+
+        return ($asJson) ? json_encode($items->asArray()) : $items;
+    }
+
+    public function getSourcesList($asJson = false)
+    {
+        $list = [];
+        if (is_array($models = $this->module->supportModels)) {
+            foreach ($models as $name => $class) {
+                $model = new $class();
+
+                $items = [];
+                foreach ($model->getAllPublished() as $item) { // @TODO: Add condition by lang locale
+                    if (!is_null($item->url) && !isset($items[$item->url])) {
+                        $items[] = [
+                            'id' => $item->id,
+                            'name' => $item->name,
+                            'title' => $item->title,
+                            'url' => $item->url
+                        ];
+                    }
+                };
+
+                $instance = $this->module->moduleLoaded($model->moduleId, true);
+                //$instance = $model->getModule(true);
+
+                $list[] = [
+                    'id' => $model->moduleId,
+                    'name' => $instance->name,
+                    'route' => $model->baseRoute,
+                    'items' => $items,
+                ];
+            }
+        }
+
+        return ($asJson) ? json_encode($list) : $list;
     }
 }

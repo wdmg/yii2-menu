@@ -16,6 +16,7 @@ namespace wdmg\menu;
 
 use Yii;
 use wdmg\base\BaseModule;
+use yii\base\InvalidConfigException;
 
 /**
  * Menu module definition class
@@ -41,6 +42,15 @@ class Module extends BaseModule
      * @var string, the description of module
      */
     public $description = "Menu module";
+
+    /**
+     * @var array list of supported models for displaying a sitemap
+     */
+    public $supportModels = [
+        'pages' => 'wdmg\pages\models\Pages',
+        'news' => 'wdmg\news\models\News',
+        'blog' => 'wdmg\blog\models\Posts'
+    ];
 
     /**
      * @var string the module version
@@ -94,6 +104,12 @@ class Module extends BaseModule
      */
     public function bootstrap($app) {
         parent::bootstrap($app);
+
+        if (isset(Yii::$app->params["menu.supportModels"]))
+            $this->supportModels = Yii::$app->params["menu.supportModels"];
+
+        if (!isset($this->supportModels))
+            throw new InvalidConfigException("Required module property `supportModels` isn't set.");
 
         // Configure module component
         $app->setComponents([

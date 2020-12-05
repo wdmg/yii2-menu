@@ -39,6 +39,7 @@ return [
 
     'All menus' => "Все меню",
     'Items' => "Пункты",
+    'Menu items' => "Пункты меню",
     '{count} items' => "{count} пункт(ов)",
     'No items found' => "Пункты не найдены",
 
