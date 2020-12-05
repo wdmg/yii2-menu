@@ -9,7 +9,7 @@ use yii\helpers\ArrayHelper;
 use yii\helpers\Json;
 use yii\behaviors\TimestampBehavior;
 use yii\behaviors\BlameableBehavior;
-use yii\behaviors\SluggableBehavior;
+use wdmg\base\behaviors\SluggableBehavior;
 use wdmg\base\models\ActiveRecord;
 use wdmg\menu\models\MenuItems;
 
@@ -57,7 +57,7 @@ class Menu extends ActiveRecord
             ],
             'sluggable' =>  [
                 'class' => SluggableBehavior::class,
-                'attribute' => 'title',
+                'attribute' => 'name',
                 'slugAttribute' => 'alias',
                 'skipOnEmpty' => true,
                 'immutable' => true
@@ -78,8 +78,8 @@ class Menu extends ActiveRecord
     public function rules()
     {
         $rules = [
-            [['title', 'alias', 'status'], 'required'],
-            [['title', 'alias'], 'string', 'min' => 3, 'max' => 64],
+            [['name', 'alias', 'status'], 'required'],
+            [['name', 'alias'], 'string', 'min' => 3, 'max' => 64],
             ['description', 'string', 'max' => 255],
             ['status', 'integer'],
             ['status', 'in', 'range' => array_keys($this->getStatusesList(false))],
@@ -101,9 +101,10 @@ class Menu extends ActiveRecord
     {
         return [
             'id' => Yii::t('app/modules/menu', 'ID'),
-            'title' => Yii::t('app/modules/menu', 'Title'),
+            'name' => Yii::t('app/modules/menu', 'Menu name'),
             'description' => Yii::t('app/modules/menu', 'Description'),
             'alias' => Yii::t('app/modules/menu', 'Alias'),
+            'items' => Yii::t('app/modules/menu', 'Items'),
             'status' => Yii::t('app/modules/menu', 'Status'),
             'created_at' => Yii::t('app/modules/menu', 'Created at'),
             'created_by' => Yii::t('app/modules/menu', 'Created by'),
@@ -124,9 +125,12 @@ class Menu extends ActiveRecord
         return parent::beforeSave($insert);
     }
 
-    public function getMenuItems($menu_id)
+    public function getMenuItems($menu_id = null)
     {
-        return MenuItems::find()->where(['menu_id' => $menu_id])->all();
+        if ($menu_id)
+            return MenuItems::find()->where(['menu_id' => $menu_id])->all();
+        else
+            return MenuItems::find()->where(['menu_id' => $this->id])->all();
     }
 
     /**

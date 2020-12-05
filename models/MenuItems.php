@@ -35,6 +35,8 @@ class MenuItems extends ActiveRecord
     const TYPE_PAGE = 1;
     const TYPE_NEWS = 2;
     const TYPE_BLOG = 3;
+    const TYPE_BLOG_CATS = 4;
+    const TYPE_MEDIA_CATS = 5;
 
     /**
      * {@inheritdoc}
@@ -139,6 +141,8 @@ class MenuItems extends ActiveRecord
             self::TYPE_PAGE => Yii::t('app/modules/menu', 'Inner Page'),
             self::TYPE_NEWS => Yii::t('app/modules/menu', 'News Item'),
             self::TYPE_BLOG => Yii::t('app/modules/menu', 'Blog Post'),
+            self::TYPE_BLOG_CATS => Yii::t('app/modules/menu', 'Blog Cats'),
+            self::TYPE_MEDIA_CATS => Yii::t('app/modules/menu', 'Media Cats'),
         ]);
 
         return $list;

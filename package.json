@@ -1,0 +1,44 @@
+{
+  "name": "yii2-menu",
+  "version": "0.0.1",
+  "description": "Menu module assets",
+  "scripts": {
+    "start": "gulp",
+    "dev": "gulp watch",
+    "prod": "cross-env NODE_ENV=prod gulp"
+  },
+  "author": {
+    "name": "W.D.M.Group, Ukraine",
+    "email": "office@wdmg.com.ua",
+    "url": "https://wdmg.com.ua/"
+  },
+  "contributors": [
+    {
+      "name": "Alexsander Vyshnyvetskyy",
+      "email": "alex.vyshnyvetskyy@gmail.com",
+      "url": "https://vyshnyvetskyy.com/"
+    }
+  ],
+  "homepage": "https://github.com/wdmg/yii2-menu",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wdmg/yii2-menu.git"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/wdmg/yii2-menu/issues"
+  },
+  "devDependencies": {
+    "browser-sync": "^2.26.3",
+    "cross-env": "^7.0.2",
+    "gulp": "^4.0.2",
+    "gulp-clean": "^0.4.0",
+    "gulp-clean-css": "^4.3.0",
+    "gulp-concat": "^2.6.1",
+    "gulp-cssmin": "^0.2.0",
+    "gulp-include": "^2.4.1",
+    "gulp-sass": "^4.0.2",
+    "gulp-sourcemaps": "^2.6.5",
+    "gulp-uglify": "^3.0.2"
+  }
+}

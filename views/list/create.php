@@ -1,6 +1,9 @@
 <?php
 
 use yii\helpers\Html;
+use wdmg\menu\MenuAsset;
+
+$bundle = MenuAsset::register($this);
 
 /* @var $this yii\web\View */
 /* @var $model wdmg\menu\models\Menu */

@@ -65,6 +65,13 @@ class Module extends BaseModule
         // Set priority of current module
         $this->setPriority($this->priority);
 
+        if (!Yii::$app instanceof \yii\console\Application) {
+            // Set assets bundle, if not loaded
+            if ($this->isBackend() && !$this->isConsole()) {
+                if (!isset(Yii::$app->assetManager->bundles['wdmg\menu\MenuAsset']))
+                    Yii::$app->assetManager->bundles['wdmg\menu\MenuAsset'] = \wdmg\menu\MenuAsset::register(Yii::$app->view);
+            }
+        }
     }
 
     /**

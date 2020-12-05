@@ -10,7 +10,12 @@ use wdmg\widgets\SelectInput;
 /* @var $form yii\widgets\ActiveForm */
 ?>
 
-<div class="menu-form">
+<div class="menu-form row">
+<?php if ($model->id) : ?>
+    <div class="col-xs-12 col-sm-12 col-md-8 col-lg-9">
+<?php else : ?>
+    <div class="col-xs-12">
+<?php endif; ?>
     <?php $form = ActiveForm::begin([
         'id' => "addMenuForm",
         'enableAjaxValidation' => true,
@@ -18,24 +23,36 @@ use wdmg\widgets\SelectInput;
             'enctype' => 'multipart/form-data'
         ]
     ]); ?>
-    <?= $form->field($model, 'title'); ?>
+
+    <?= $form->field($model, 'name'); ?>
+
     <?= $form->field($model, 'alias')->textInput([
         'disabled' => ($model->id) ? true : false,
         'maxlength' => true
     ]); ?>
+
     <?= $form->field($model, 'description')->textarea(['rows' => 2]) ?>
+
+    <?= ($model->id) ? '<div id="menuItems" class="menu-items no-items">' . Yii::t('app/modules/menu', 'Add menu items from the right column.') . '</div>' : ''; ?>
+
     <?= $form->field($model, 'status')->widget(SelectInput::class, [
         'items' => $model->getStatusesList(false),
         'options' => [
             'class' => 'form-control'
         ]
     ]); ?>
-    <hr/>
-    <div class="form-group">
-        <?= Html::a(Yii::t('app/modules/menu', '&larr; Back to list'), ['list/index'], ['class' => 'btn btn-default pull-left']) ?>&nbsp;
-        <?= Html::submitButton(Yii::t('app/modules/menu', 'Save'), ['class' => 'btn btn-success pull-right']) ?>
-    </div>
+        <hr/>
+        <div class="form-group">
+            <?= Html::a(Yii::t('app/modules/menu', '&larr; Back to list'), ['list/index'], ['class' => 'btn btn-default pull-left']) ?>&nbsp;
+            <?= Html::submitButton(Yii::t('app/modules/menu', 'Save'), ['class' => 'btn btn-success pull-right']) ?>
+        </div>
     <?php ActiveForm::end(); ?>
+    </div>
+<?php if ($model->id) : ?>
+    <div class="col-xs-12 col-sm-12 col-md-4 col-lg-3">
+        // Sidebar
+    </div>
+<?php endif; ?>
 </div>
 <?php $this->registerJs(<<< JS
 $(document).ready(function() {

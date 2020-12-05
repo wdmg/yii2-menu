@@ -7,10 +7,11 @@ use yii\web\View;
 use yii\widgets\Pjax;
 use yii\bootstrap\Modal;
 use wdmg\widgets\SelectInput;
+use wdmg\menu\MenuAsset;
+
+$bundle = MenuAsset::register($this);
 
 /* @var $this yii\web\View */
-
-$bundle = \wdmg\media\MediaAsset::register($this);
 
 $this->title = Yii::t('app/modules/menu', 'Menu');
 $this->params['breadcrumbs'][] = $this->title;
@@ -32,10 +33,29 @@ $this->params['breadcrumbs'][] = $this->title;
             ['class' => 'yii\grid\SerialColumn'],
 
              'id',
-             'title',
+             'name',
              'description',
              'alias',
 
+            [
+                'attribute' => 'items',
+                'format' => 'html',
+                'headerOptions' => [
+                    'class' => 'text-center'
+                ],
+                'contentOptions' => [
+                    'class' => 'text-center'
+                ],
+                'value' => function($data) {
+                    if ($count = count($data->getMenuItems())) {
+                        return Yii::t('app/modules/menu', '{count} items', [
+                            'count' => $count
+                        ]);
+                    } else {
+                        return Yii::t('app/modules/menu', 'No items found');
+                    }
+                }
+            ],
             [
                 'attribute' => 'status',
                 'format' => 'html',

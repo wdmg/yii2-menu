@@ -21,7 +21,7 @@ class m201203_210842_menu extends Migration
         $this->createTable('{{%menu}}', [
             'id' => $this->primaryKey(),
 
-            'title' => $this->string(64)->notNull(),
+            'name' => $this->string(64)->notNull(),
             'description' => $this->string(255)->null(),
             'alias' => $this->string(64)->notNull(),
             'status' => $this->tinyInteger(1)->null()->defaultValue(0), // 0 - draft, 1 - published
@@ -33,7 +33,7 @@ class m201203_210842_menu extends Migration
 
         ], $tableOptions);
 
-        $this->createIndex('{{%idx-menu}}', '{{%menu}}', ['title', 'alias', 'status']);
+        $this->createIndex('{{%idx-menu}}', '{{%menu}}', ['name', 'alias', 'status']);
 
         // If exist module `Users` set foreign key `created_by`, `updated_by` to `users.id`
         if (class_exists('\wdmg\users\models\Users')) {

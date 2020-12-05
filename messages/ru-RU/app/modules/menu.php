@@ -8,7 +8,7 @@ return [
     'Menu ID' => 'ИД меню',
     'Parent ID' => 'ИД родителя',
     'Title' => 'Заголовок',
-    'Name' => 'Название',
+    'Menu name' => 'Название меню',
     'Description' => 'Описание',
     'Alias' => 'Алиас',
     'Type' => 'Тип',
@@ -37,20 +37,27 @@ return [
     '&larr; Prev page' => '&larr; Предыдущая страница',
     'Next page &rarr;' => 'Следующая страница &rarr;',
 
+    'All menus' => "Все меню",
+    'Items' => "Пункты",
+    '{count} items' => "{count} пункт(ов)",
+    'No items found' => "Пункты не найдены",
+
     'Actions' => "Действия",
     'Updating' => "Редактирование",
     'Add new menu' => "Добавить меню",
     'Create menu' => "Создание меню",
-    'Updating menu: {title}' => "Редактирование меню: {title}",
+    'Updating menu: {name}' => "Редактирование меню: {name}",
     '&larr; Back to list' => "&larr; Назад к списку",
     'Save' => "Сохранить",
 
+    'Add menu items from the right column.' => "Добавьте элементы меню из столбца справа.",
+
     'Menu has been successfully added!' => "Меню было успешно добавлено!",
     'An error occurred while add the menu.' => "Произошла ошибка при добавлении меню.",
-    'OK! Menu `{title}` successfully updated.' => "OK! Меню `{title}` было успешно обновлено!",
-    'An error occurred while update a menu `{title}`.' => "Произошла ошибка при обновлении меню `{title}`.",
-    'OK! Menu `{title}` successfully deleted.' => "OK! Меню `{title}` было успешно удалено!",
-    'An error occurred while deleting a menu `{title}`.' => "Произошла ошибка при удалении меню `{title}`.",
+    'OK! Menu `{name}` successfully updated.' => "OK! Меню `{name}` было успешно обновлено!",
+    'An error occurred while update a menu `{name}`.' => "Произошла ошибка при обновлении меню `{name}`.",
+    'OK! Menu `{name}` successfully deleted.' => "OK! Меню `{name}` было успешно удалено!",
+    'An error occurred while deleting a menu `{name}`.' => "Произошла ошибка при удалении меню `{name}`.",
 
 ];
 

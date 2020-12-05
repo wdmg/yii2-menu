@@ -19,7 +19,7 @@ class MenuSearch extends Menu
     {
         return [
             [['id', 'status'], 'integer'],
-            [['title', 'description', 'alias'], 'string'],
+            [['name', 'description', 'alias'], 'string'],
             [['created_at', 'updated_at'], 'safe'],
         ];
     }
@@ -61,7 +61,7 @@ class MenuSearch extends Menu
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'title' => $this->title,
+            'name' => $this->name,
             'description' => $this->description,
             'alias' => $this->alias,
             'status' => $this->status,

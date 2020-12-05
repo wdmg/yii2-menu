@@ -109,7 +109,7 @@ class ListController extends Controller
                 if ($model->save()) {
                     // Log activity
                     $this->module->logActivity(
-                        'New menu `' . $model->title . '` with ID `' . $model->id . '` has been successfully added.',
+                        'New menu `' . $model->name . '` with ID `' . $model->id . '` has been successfully added.',
                         $this->uniqueId . ":" . $this->action->id,
                         'success',
                         1
@@ -123,7 +123,7 @@ class ListController extends Controller
                 } else {
                     // Log activity
                     $this->module->logActivity(
-                        'An error occurred while add the menu: ' . $model->title,
+                        'An error occurred while add the menu: ' . $model->name,
                         $this->uniqueId . ":" . $this->action->id,
                         'danger',
                         1
@@ -162,7 +162,7 @@ class ListController extends Controller
                 if ($model->save()) {
                     // Log activity
                     $this->module->logActivity(
-                        'Menu `' . $model->title . '` with ID `' . $model->id . '` has been successfully updated.',
+                        'Menu `' . $model->name . '` with ID `' . $model->id . '` has been successfully updated.',
                         $this->uniqueId . ":" . $this->action->id,
                         'success',
                         1
@@ -172,9 +172,9 @@ class ListController extends Controller
                         'success',
                         Yii::t(
                             'app/modules/menu',
-                            'OK! Menu `{title}` successfully updated.',
+                            'OK! Menu `{name}` successfully updated.',
                             [
-                                'title' => $model->title
+                                'name' => $model->name
                             ]
                         )
                     );
@@ -182,7 +182,7 @@ class ListController extends Controller
                 } else {
                     // Log activity
                     $this->module->logActivity(
-                        'An error occurred while update the content block `' . $model->title . '` with ID `' . $model->id . '`.',
+                        'An error occurred while update the content block `' . $model->name . '` with ID `' . $model->id . '`.',
                         $this->uniqueId . ":" . $this->action->id,
                         'danger',
                         1
@@ -192,9 +192,9 @@ class ListController extends Controller
                         'danger',
                         Yii::t(
                             'app/modules/menu',
-                            'An error occurred while update a menu `{title}`.',
+                            'An error occurred while update a menu `{name}`.',
                             [
-                                'title' => $model->title
+                                'name' => $model->name
                             ]
                         )
                     );
@@ -214,7 +214,7 @@ class ListController extends Controller
         if ($model->delete()) {
             // Log activity
             $this->module->logActivity(
-                'Menu `' . $model->title . '` with ID `' . $model->id . '` has been successfully deleted.',
+                'Menu `' . $model->name . '` with ID `' . $model->id . '` has been successfully deleted.',
                 $this->uniqueId . ":" . $this->action->id,
                 'success',
                 1
@@ -224,16 +224,16 @@ class ListController extends Controller
                 'success',
                 Yii::t(
                     'app/modules/menu',
-                    'OK! Menu `{title}` successfully deleted.',
+                    'OK! Menu `{name}` successfully deleted.',
                     [
-                        'title' => $model->title
+                        'name' => $model->name
                     ]
                 )
             );
         } else {
             // Log activity
             $this->module->logActivity(
-                'An error occurred while deleting the menu `' . $model->title . '` with ID `' . $model->id . '`.',
+                'An error occurred while deleting the menu `' . $model->name . '` with ID `' . $model->id . '`.',
                 $this->uniqueId . ":" . $this->action->id,
                 'danger',
                 1
@@ -243,9 +243,9 @@ class ListController extends Controller
                 'danger',
                 Yii::t(
                     'app/modules/menu',
-                    'An error occurred while deleting a menu `{title}`.',
+                    'An error occurred while deleting a menu `{name}`.',
                     [
-                        'title' => $model->title
+                        'name' => $model->name
                     ]
                 )
             );
