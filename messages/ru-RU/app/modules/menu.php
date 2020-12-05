@@ -38,7 +38,9 @@ return [
     'Next page &rarr;' => 'Следующая страница &rarr;',
 
     'All menus' => "Все меню",
+    'Links' => "Ссылки",
     'Items' => "Пункты",
+    'Available items' => "Доступные элементы",
     'Menu items' => "Пункты меню",
     '{count} items' => "{count} пункт(ов)",
     'No items found' => "Пункты не найдены",
