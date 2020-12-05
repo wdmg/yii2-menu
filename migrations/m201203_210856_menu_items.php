@@ -24,12 +24,15 @@ class m201203_210856_menu_items extends Migration
             'menu_id' => $this->integer(11)->notNull(),
             'parent_id' => $this->integer(11)->null(),
 
-            'label' => $this->string(128)->notNull(),
+            'name' => $this->string(128)->notNull(),
             'title' => $this->string(255)->null(),
 
-            'type' => $this->tinyInteger(1)->notNull()->defaultValue(1), // 1 - link, 2 - source
             'url' => $this->string(255)->notNull(),
-            'source' => $this->text()->null(),
+            'type' => $this->tinyInteger(1)->notNull()->defaultValue(1),
+            'source_id' => $this->integer(11)->null(),
+
+            'only_auth' => $this->tinyInteger(1)->null(),
+            'target_blank' => $this->tinyInteger(1)->null(),
 
             'created_at' => $this->dateTime()->defaultExpression('CURRENT_TIMESTAMP'),
             'created_by' => $this->integer(11)->null(),
@@ -40,7 +43,7 @@ class m201203_210856_menu_items extends Migration
 
 
         // Setup foreign key to main menu
-        $this->createIndex('{{%idx-menu_item}}', '{{%menu_items}}', ['menu_id', 'label', 'type', 'url']);
+        $this->createIndex('{{%idx-menu_item}}', '{{%menu_items}}', ['menu_id', 'name', 'url', 'type', 'source_id']);
         $this->addForeignKey(
             'fk_menu_item',
             '{{%menu_items}}',

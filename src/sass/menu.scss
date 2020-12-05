@@ -8,3 +8,61 @@
     border-radius: 4px;
   }
 }
+
+.panel-group {
+  &.menu-sources {
+    .panel {
+      .panel-heading {
+        .panel-title {
+          a[role="button"] {
+            display: inline-block;
+            width: 100%;
+          }
+        }
+      }
+      .panel-collapse {
+        &.collapse {
+          &.in {
+
+          }
+        }
+        .panel-body {
+          .source-list {
+            overflow-y: auto;
+            max-height: 212px;
+            -webkit-mask: linear-gradient(180deg, #000 0%, #000 calc(100% - 1rem), rgba(#000, 0) 100%);
+            mask: linear-gradient(180deg, #000 0%, #000 calc(100% - 1rem), rgba(#000, 0) 100%);
+            .checkbox {
+              label {
+                display: inline-block;
+                width: 100%;
+              }
+              input[type="checkbox"] {
+
+              }
+            }
+          }
+          hr {
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+          }
+          .form-group {
+            .checkbox {
+              margin-top: 0.5rem;
+              margin-bottom: 0.5rem;
+            }
+            button[type="button"] {
+
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+.toolbar {
+  display: inline-flex;
+  justify-content: space-between;
+  width: 100%;
+}

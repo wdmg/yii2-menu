@@ -14,6 +14,7 @@ use yii\helpers\Json;
 use wdmg\helpers\StringHelper;
 use wdmg\menu\models\Menu;
 use wdmg\menu\models\MenuSearch;
+use wdmg\menu\models\MenuItems;
 
 /**
  * ListController implements the CRUD actions for Menu model.
@@ -94,7 +95,6 @@ class ListController extends Controller
     {
         $model = new Menu();
 
-
         if (Yii::$app->request->isAjax) {
             if ($model->load(Yii::$app->request->post())) {
                 if ($model->validate())
@@ -119,7 +119,7 @@ class ListController extends Controller
                         'success',
                         Yii::t('app/modules/menu', 'Menu has been successfully added!')
                     );
-                    return $this->redirect(['list/index']);
+                    return $this->redirect(['list/update', 'id' => $model->id]);
                 } else {
                     // Log activity
                     $this->module->logActivity(
@@ -147,6 +147,7 @@ class ListController extends Controller
     public function actionUpdate($id)
     {
         $model = self::findModel($id);
+        $model->item = new MenuItems();
 
         if (Yii::$app->request->isAjax) {
             if ($model->load(Yii::$app->request->post())) {

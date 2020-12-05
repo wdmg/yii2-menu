@@ -34,6 +34,7 @@ class Menu extends ActiveRecord
     const STATUS_PUBLISHED = 1;
 
     private $module;
+    public $item;
 
     /**
      * {@inheritdoc}
@@ -230,8 +231,8 @@ class Menu extends ActiveRecord
                     }
                 };
 
-                $instance = $this->module->moduleLoaded($model->moduleId, true);
                 //$instance = $model->getModule(true);
+                $instance = $this->module->moduleLoaded($model->moduleId, true);
 
                 $list[] = [
                     'id' => $model->moduleId,

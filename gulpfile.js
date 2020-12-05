@@ -2,9 +2,10 @@ const gulp = require('gulp');
 const cleaner = require('gulp-clean');
 const gulpSass = require('gulp-sass');
 const jsConcat = require('gulp-concat');
-const jsUglify = require('gulp-uglify');
+const jsUglify = require('gulp-terser');
 const cssMinify = require('gulp-cssmin');
 const jsInclude = require('gulp-include');
+const renameIt = require('gulp-rename');
 const cleanCSS = require('gulp-clean-css');
 const sourceMaps = require('gulp-sourcemaps');
 
@@ -26,7 +27,7 @@ function css_minify() {
             console.log(`${details.name}: ${details.stats.minifiedSize}`);
         }))
         .pipe(sourceMaps.write())
-        .pipe(rename({ suffix: '.min' }))
+        .pipe(renameIt({ suffix: '.min' }))
         .pipe(gulp.dest('assets/css'));
 }
 
@@ -49,7 +50,7 @@ function js_minify() {
         .pipe(sourceMaps.init())
         .pipe(jsUglify())
         .pipe(sourceMaps.write())
-        .pipe(rename({ suffix: '.min' }))
+        .pipe(renameIt({ suffix: '.min' }))
         .pipe(gulp.dest('assets/js'));
 }
 

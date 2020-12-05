@@ -17,11 +17,13 @@ use wdmg\base\models\ActiveRecord;
  * @property int $id
  * @property int $menu_id
  * @property int $parent_id
- * @property string $label
+ * @property string $name
  * @property string $title
  * @property int $type
  * @property string $url
  * @property string $source
+ * @property int $only_auth
+ * @property int $target_blank
  * @property string $created_at
  * @property integer $created_by
  * @property string $updated_at
@@ -76,10 +78,10 @@ class MenuItems extends ActiveRecord
     public function rules()
     {
         $rules = [
-            [['label', 'url', 'type'], 'required'],
-            ['label', 'string', 'min' => 3, 'max' => 128],
+            [['name', 'url', 'type'], 'required'],
+            ['name', 'string', 'min' => 3, 'max' => 128],
             [['title', 'url'], 'string', 'max' => 255],
-            [['menu_id', 'parent_id', 'type'], 'integer'],
+            [['menu_id', 'parent_id', 'type', 'source_id', 'only_auth', 'target_blank'], 'integer'],
             ['type', 'in', 'range' => array_keys($this->getTypesList(false))],
             [['created_at', 'updated_at'], 'safe'],
         ];
@@ -103,8 +105,10 @@ class MenuItems extends ActiveRecord
             'name' => Yii::t('app/modules/menu', 'Name'),
             'title' => Yii::t('app/modules/menu', 'Title'),
             'type' => Yii::t('app/modules/menu', 'Type'),
-            'url' => Yii::t('app/modules/menu', 'Url'),
-            'source' => Yii::t('app/modules/menu', 'Source'),
+            'url' => Yii::t('app/modules/menu', 'URL'),
+            'source_id' => Yii::t('app/modules/menu', 'Source ID'),
+            'only_auth' => Yii::t('app/modules/menu', 'Only auth'),
+            'target_blank' => Yii::t('app/modules/menu', 'Target blank'),
             'created_at' => Yii::t('app/modules/menu', 'Created at'),
             'created_by' => Yii::t('app/modules/menu', 'Created by'),
             'updated_at' => Yii::t('app/modules/menu', 'Updated at'),
