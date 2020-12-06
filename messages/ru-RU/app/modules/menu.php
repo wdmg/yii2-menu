@@ -43,6 +43,7 @@ return [
 
     'All menus' => "Все меню",
     'Links' => "Ссылки",
+    'Custom link' => "Произвольная ссылка",
     'Items' => "Пункты",
     'Available items' => "Доступные элементы",
     'Menu items' => "Пункты меню",

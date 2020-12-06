@@ -62,20 +62,42 @@ use wdmg\widgets\SelectInput;
         <fieldset>
             <label for="menuSources"><?= Yii::t('app/modules/menu', 'Available items') ?></label>
             <div id="menuSources" class="panel-group menu-sources" role="tablist" aria-multiselectable="true">
+            <?php if ($model->item) : ?>
                 <div class="panel panel-default">
-                    <div class="panel-heading" role="tab" id="heading-links">
+                    <div class="panel-heading" role="tab" id="heading-link">
                         <h4 class="panel-title">
-                            <a role="button" data-toggle="collapse" data-parent="#menuSources" href="#collapse-links" aria-expanded="true" aria-controls="collapse-links">
-                                <?= Yii::t('app/modules/menu', 'Links') ?>
+                            <a role="button" data-toggle="collapse" data-parent="#menuSources" href="#collapse-link" aria-expanded="true" aria-controls="collapse-link">
+                                <?= Yii::t('app/modules/menu', 'Custom link') ?>
                             </a>
                         </h4>
                     </div>
-                    <div id="collapse-links" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="heading-links">
+                    <div id="collapse-link" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="heading-link">
                         <div class="panel-body">
-                            //...
+                            <?php $linkForm = ActiveForm::begin([
+                                'id' => "menuItemForm",
+                                'enableAjaxValidation' => true,
+                                'options' => [
+                                    'enctype' => 'multipart/form-data'
+                                ]
+                            ]); ?>
+                            <?= $linkForm->field($model->item, 'name')->textInput(); ?>
+                            <?= $linkForm->field($model->item, 'title')->textInput(); ?>
+                            <?= $linkForm->field($model->item, 'url')->textInput(); ?>
+                            <?= $linkForm->field($model->item, 'only_auth', [
+                                'template' => '<div class="col-xs-12">{input} - {label}</div><div class="col-xs-12"><small>{error}</small></div>',
+                            ])->checkbox(['label' => null])->label(Yii::t('app/modules/menu', 'Only for signed users')) ?>
+                            <?= $linkForm->field($model->item, 'target_blank', [
+                                'template' => '<div class="col-xs-12">{input} - {label}</div><div class="col-xs-12"><small>{error}</small></div>',
+                            ])->checkbox(['label' => null])->label(Yii::t('app/modules/menu', 'Open as target _blank')) ?>
+                            <hr/>
+                            <div class="form-group">
+                                <button class="btn btn-primary btn-sm" type="button" data-rel="add"><?= Yii::t('app/modules/menu', 'Add to menu'); ?></button>
+                            </div>
+                            <?php ActiveForm::end(); ?>
                         </div>
                     </div>
                 </div>
+            <?php endif; ?>
             <?php
                 if ($sources = $model->getSourcesList(false)) {
                     foreach ($sources as $source) { ?>
@@ -85,7 +107,7 @@ use wdmg\widgets\SelectInput;
                                     <a role="button" data-toggle="collapse" data-parent="#menuSources"
                                        href="#collapse-<?= $source['id']; ?>" aria-expanded="false"
                                        aria-controls="collapseOne">
-                                        <?= $source['name']; ?> (<?= count($source['items']); ?>)
+                                        <?= $source['name']; ?> <span class="text-muted">(<?= count($source['items']); ?>)</span>
                                     </a>
                                 </h4>
                             </div>
@@ -102,6 +124,7 @@ use wdmg\widgets\SelectInput;
                                                         'data' => [
                                                             'id' => $item['id'],
                                                             'source' => $source['id'],
+                                                            'source_name' => $source['name'],
                                                             'name' => $item['name'],
                                                             'title' => $item['title'],
                                                             'url' => $item['url'],
@@ -170,10 +193,10 @@ JS
 <?php if ($model->item) : ?>
 <template id="itemFormTemplate">
     <?php $itemForm = ActiveForm::begin([
-        'id' => "menuItemForm-{{source}}-{{id}}",
         'enableAjaxValidation' => true,
         'options' => [
-            'enctype' => 'multipart/form-data'
+            'enctype' => 'multipart/form-data',
+            'data-key' => '{{source}}-{{id}}'
         ]
     ]); ?>
     <?= $itemForm->field($model->item, 'name')->textInput(['value' => '{{name}}']); ?>
@@ -225,8 +248,8 @@ JS
             ); ?>
             <?= Html::a(
                 Yii::t('app/modules/menu', 'Close') . ' <i class="fa fa-times"></i>',
-                '#',
-                ['class' => 'btn btn-link', 'role' => 'button']
+                '#menuItemCollapse-{{id}}',
+                ['class' => 'btn btn-link', 'role' => 'button', 'data-toggle' => "collapse"]
             ); ?>
         </div>
     </div>
@@ -239,7 +262,7 @@ JS
             <h4 class="panel-title">
                 <a role="button" data-toggle="collapse" data-parent="#menuItems" href="#menuItemCollapse-{{id}}" aria-expanded="true" aria-controls="menuItemCollapse-{{id}}">
                     {{name}}
-                    <span class="text-muted pull-right">{{source}}</span>
+                    <span class="text-muted pull-right">{{source_name}}</span>
                 </a>
             </h4>
         </div>

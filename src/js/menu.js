@@ -1,27 +1,28 @@
 var DragMenu = new function() {
-    let menuSources = document.getElementById('menuSources');
-    let panels = menuSources.querySelectorAll(".panel .panel-body");
-    let sourcesList = [...panels].filter(elem => {
+    var menuSources = document.getElementById('menuSources');
+    var panels = menuSources.querySelectorAll(".panel .panel-body");
+    var sourcesList = [...panels].filter(elem => {
         if (elem.children.length) {
 
             let items = elem.querySelectorAll('.source-list input[type="checkbox"]');
             let addButton = elem.querySelector('button[data-rel="add"]');
-            if (addButton) {
+            if (addButton && items) {
+                addButton.onclick = (event) => {
+                    event.preventDefault();
+                    let sourcesItems = [...items].filter(item => {
+                        if (item.checked) {
+                            addMenuItem(item);
+                        }
+                    });
 
-                if (items) {
-                    addButton.onclick = (event) => {
-                        event.preventDefault();
-                        let sourcesItems = [...items].filter(item => {
-                            if (item.checked) {
-                                addMenuItem(item);
-                            }
-                        });
-                    }
+                    items.forEach(checkbox => {
+                        checkbox.checked = false;
+                    });
                 }
             }
 
             let selectAll = elem.querySelector('input[type="checkbox"][name="select-all"]');
-            if (selectAll) {
+            if (selectAll && items) {
                 selectAll.onchange = (event) => {
                     event.preventDefault();
                     if (event.target.checked) {
@@ -42,7 +43,7 @@ var DragMenu = new function() {
      * @param {String} HTML representing a single element
      * @return {Element}
      */
-    let htmlToElement = (html) => {
+    var htmlToElement = (html) => {
         var template = document.createElement('template');
         html = html.trim(); // Never return a text node of whitespace as the result
         template.innerHTML = html;
@@ -53,13 +54,13 @@ var DragMenu = new function() {
      * @param {String} HTML representing any number of sibling elements
      * @return {NodeList}
      */
-    let htmlToElements = (html) => {
+    var htmlToElements = (html) => {
         var template = document.createElement('template');
         template.innerHTML = html;
         return template.content.childNodes;
     }
 
-    let fillTemplate = (str, obj) => {
+    var fillTemplate = (str, obj) => {
         do {
             var beforeReplace = str;
             str = str.replace(/{{\s*([^}\s]+)\s*}}/g, function(wholeMatch, key) {
@@ -72,10 +73,10 @@ var DragMenu = new function() {
         return str;
     };
 
-    let menuItemsList = document.getElementById('menuItems');
-    let formTemplate = document.getElementById('itemFormTemplate');
-    let itemTemplate = document.getElementById('menuItemTemplate');
-    let addMenuItem = (item) => {
+    var menuItemsList = document.getElementById('menuItems');
+    var formTemplate = document.getElementById('itemFormTemplate');
+    var itemTemplate = document.getElementById('menuItemTemplate');
+    var addMenuItem = (item) => {
         if (menuItemsList && itemTemplate && 'content' in document.createElement('template')) {
 
             if (menuItemsList.classList.contains('no-items')) {
@@ -88,7 +89,6 @@ var DragMenu = new function() {
 
             let content = fillTemplate(itemTemplate.innerHTML, data);
             menuItemsList.append(htmlToElement(content));
-
         }
     };
 }
