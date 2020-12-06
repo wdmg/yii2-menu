@@ -86,10 +86,10 @@ use wdmg\widgets\SelectInput;
                             <?= $linkForm->field($model->item, 'title')->textInput(); ?>
                             <?= $linkForm->field($model->item, 'url')->textInput(); ?>
                             <?= $linkForm->field($model->item, 'only_auth', [
-                                'template' => '<div class="col-xs-12">{input} - {label}</div><div class="col-xs-12"><small>{error}</small></div>',
+                                'template' => '{input} - {label}{error}',
                             ])->checkbox(['label' => null])->label(Yii::t('app/modules/menu', 'Only for signed users')) ?>
                             <?= $linkForm->field($model->item, 'target_blank', [
-                                'template' => '<div class="col-xs-12">{input} - {label}</div><div class="col-xs-12"><small>{error}</small></div>',
+                                'template' => '{input} - {label}{error}',
                             ])->checkbox(['label' => null])->label(Yii::t('app/modules/menu', 'Open as target _blank')) ?>
                             <hr/>
                             <div class="form-group">
@@ -205,10 +205,10 @@ JS
     <?= $itemForm->field($model->item, 'title')->textInput(['value' => '{{title}}']); ?>
     <?= $itemForm->field($model->item, 'url')->textInput(['value' => '{{url}}']); ?>
     <?= $itemForm->field($model->item, 'only_auth', [
-        'template' => '<div class="col-xs-12">{input} - {label}</div><div class="col-xs-12"><small>{error}</small></div>',
+        'template' => '{input} - {label}{error}',
     ])->checkbox(['label' => null])->label(Yii::t('app/modules/menu', 'Only for signed users')) ?>
     <?= $itemForm->field($model->item, 'target_blank', [
-        'template' => '<div class="col-xs-12">{input} - {label}</div><div class="col-xs-12"><small>{error}</small></div>',
+        'template' => '{input} - {label}{error}',
     ])->checkbox(['label' => null])->label(Yii::t('app/modules/menu', 'Open as target _blank')) ?>
     <?= $itemForm->field($model->item, 'parent_id')->hiddenInput(['value' => '{{parent_id}}'])->label(false); ?>
     <?= $itemForm->field($model->item, 'menu_id')->hiddenInput(['value' => $model->id])->label(false); ?>
