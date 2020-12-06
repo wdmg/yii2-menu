@@ -34,13 +34,15 @@ use wdmg\widgets\SelectInput;
     <?= $form->field($model, 'description')->textarea(['rows' => 2]) ?>
 
     <?php if ($model->id) : ?>
-        <div class="form-group">
+        <div class="form-group drag-menu">
             <label for="menuItems"><?= Yii::t('app/modules/menu', 'Menu items') ?></label>
             <?php if ($count = count($model->getMenuItems())) : ?>
-                <div id="menuItems" class="panel-group menu-items" role="tablist" aria-multiselectable="true"></div>
+                <ul id="menuItems" class="panel-group menu-items" role="tablist" aria-multiselectable="true"></ul>
             <?php else : ?>
-                <div id="menuItems" class="panel-group menu-items no-items" role="tablist" aria-multiselectable="true"><?= Yii::t('app/modules/menu', 'Add menu items from the right column.') ?></div>
+                <ul id="menuItems" class="panel-group menu-items no-items" role="tablist" aria-multiselectable="true"><?= Yii::t('app/modules/menu', 'Add menu items from the right column.') ?></ul>
             <?php endif; ?>
+            <div class="droppable delete-area">Delete Item</div>
+            <textarea id="menuOptions" class="form-control-plaintext" rows="12" readonly></textarea>
         </div>
     <?php endif; ?>
 
@@ -257,10 +259,16 @@ JS
 </template>
 <?php endif; ?>
 <template id="menuItemTemplate">
-    <div id="menuItem-{{id}}" class="panel panel-default">
+    <li id="menuItem-{{id}}" class="panel panel-default draggable" role="presentation">
         <div class="panel-heading" role="tab" id="menuItemHeading-{{id}}">
             <h4 class="panel-title">
-                <a role="button" data-toggle="collapse" data-parent="#menuItems" href="#menuItemCollapse-{{id}}" aria-expanded="true" aria-controls="menuItemCollapse-{{id}}">
+                <a role="button"
+                   data-toggle="collapse"
+                   data-parent="#menuItems"
+                   data-name="{{name}}"
+                   href="#menuItemCollapse-{{id}}"
+                   aria-expanded="true"
+                   aria-controls="menuItemCollapse-{{id}}">
                     {{name}}
                     <span class="text-muted pull-right">{{source_name}}</span>
                 </a>
@@ -271,5 +279,5 @@ JS
                 {{form}}
             </div>
         </div>
-    </div>
+    </li>
 </template>
