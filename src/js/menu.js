@@ -4,6 +4,7 @@ var DragMenu = new function() {
     var dragObject = {};
     var menuItemsList = document.getElementById('menuItems');
     var menuSources = document.getElementById('menuSources');
+    var addMenuItemForm = document.getElementById('addMenuItemForm');
     var panels = menuSources.querySelectorAll(".panel .panel-body");
     var menuItemsList = document.getElementById('menuItems');
     var formTemplate = document.getElementById('itemFormTemplate');
@@ -97,6 +98,9 @@ var DragMenu = new function() {
     }
 
     var addMenuItem = (item) => {
+
+        console.log(item);
+
         if (menuItemsList && itemTemplate && 'content' in document.createElement('template')) {
 
             if (menuItemsList.classList.contains('no-items')) {
@@ -104,13 +108,33 @@ var DragMenu = new function() {
                 menuItemsList.innerHTML = "";
             }
 
-            let data = item.dataset;
+            //let data = item.dataset;
+            let data = item;
             data.form = fillTemplate(formTemplate.innerHTML, data);
 
             let content = fillTemplate(itemTemplate.innerHTML, data);
             menuItemsList.append(htmlToElement(content));
         }
     };
+
+
+    if (addMenuItemForm.length) {
+        let addButton = addMenuItemForm.querySelector('button[data-rel="add"]');
+        addButton.addEventListener("click", (event) => {
+            let item = {
+                'id': "1",
+                'source': "links",
+                'source_name': "Links",
+                'name': addMenuItemForm.querySelector('input[name="MenuItems[name]"]').value,
+                'title': addMenuItemForm.querySelector('input[name="MenuItems[title]"]').value,
+                'url': addMenuItemForm.querySelector('input[name="MenuItems[url]"]').value,
+                'only_auth': addMenuItemForm.querySelector('input[name="MenuItems[only_auth]"]').value,
+                'target_blank': addMenuItemForm.querySelector('input[name="MenuItems[target_blank]"]').value,
+            };
+            addMenuItem(item);
+        });
+    }
+
     var sourcesList = [...panels].filter(panel => {
         if (panel.children.length) {
 
@@ -135,7 +159,7 @@ var DragMenu = new function() {
                     event.preventDefault();
                     let sourcesItems = [...items].filter(item => {
                         if (item.checked) {
-                            addMenuItem(item);
+                            addMenuItem(item.dataset);
                         }
                     });
 
