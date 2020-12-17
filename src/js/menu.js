@@ -95,45 +95,7 @@ var DragMenu = new function() {
             left: box.left + pageXOffset
         };
     }
-    
-    
-    var sourcesList = [...panels].filter(elem => {
-        if (elem.children.length) {
 
-            let items = elem.querySelectorAll('.source-list input[type="checkbox"]');
-            let addButton = elem.querySelector('button[data-rel="add"]');
-            if (addButton && items) {
-                addButton.onclick = (event) => {
-                    event.preventDefault();
-                    let sourcesItems = [...items].filter(item => {
-                        if (item.checked) {
-                            addMenuItem(item);
-                        }
-                    });
-
-                    items.forEach(checkbox => {
-                        checkbox.checked = false;
-                    });
-                }
-            }
-
-            let selectAll = elem.querySelector('input[type="checkbox"][name="select-all"]');
-            if (selectAll && items) {
-                selectAll.onchange = (event) => {
-                    event.preventDefault();
-                    if (event.target.checked) {
-                        items.forEach(checkbox => {
-                            checkbox.checked = true;
-                        });
-                    } else {
-                        items.forEach(checkbox => {
-                            checkbox.checked = false;
-                        });
-                    }
-                }
-            }
-        }
-    });
     var addMenuItem = (item) => {
         if (menuItemsList && itemTemplate && 'content' in document.createElement('template')) {
 
@@ -149,6 +111,57 @@ var DragMenu = new function() {
             menuItemsList.append(htmlToElement(content));
         }
     };
+    var sourcesList = [...panels].filter(panel => {
+        if (panel.children.length) {
+
+            let addButton = panel.querySelector('button[data-rel="add"]');
+            let selectAll = panel.querySelector('input[type="checkbox"][name="select-all"]');
+            let items = panel.querySelectorAll('.source-list input[type="checkbox"]');
+
+
+            if (addButton && items) {
+
+                items.forEach(item => {
+                    item.onchange = (event) => {
+                        event.preventDefault();
+                        if (panel.querySelectorAll('input[type="checkbox"]:checked:not([name="select-all"])').length)
+                            addButton.removeAttribute('disabled');
+                        else
+                            addButton.setAttribute('disabled', true);
+                    }
+                });
+
+                addButton.onclick = (event) => {
+                    event.preventDefault();
+                    let sourcesItems = [...items].filter(item => {
+                        if (item.checked) {
+                            addMenuItem(item);
+                        }
+                    });
+
+                    items.forEach(checkbox => {
+                        checkbox.checked = false;
+                    });
+                }
+            }
+
+            if (selectAll && items) {
+                selectAll.onchange = (event) => {
+                    event.preventDefault();
+                    let target = event.target.checked;
+                    items.forEach(checkbox => {
+                        if (target) {
+                            checkbox.checked = true;
+                        } else {
+                            checkbox.checked = false;
+                        }
+                        checkbox.onchange(event);
+                    });
+                }
+            }
+        }
+    });
+
     
     var createDroppable = (e) => {
         let top = e.clientY || e.targetTouches[0].pageY;

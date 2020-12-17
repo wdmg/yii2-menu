@@ -82,6 +82,7 @@ class MenuItems extends ActiveRecord
             ['name', 'string', 'min' => 3, 'max' => 128],
             [['title', 'url'], 'string', 'max' => 255],
             [['menu_id', 'parent_id', 'type', 'source_id', 'only_auth', 'target_blank'], 'integer'],
+            ['type', 'default', 'value' => self::TYPE_LINK],
             ['type', 'in', 'range' => array_keys($this->getTypesList(false))],
             [['created_at', 'updated_at'], 'safe'],
         ];

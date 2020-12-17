@@ -20,14 +20,17 @@ use wdmg\widgets\SelectInput;
         'id' => "addMenuForm",
         'enableAjaxValidation' => true,
         'options' => [
-            'enctype' => 'multipart/form-data'
+            'enctype' => 'multipart/form-data',
+            'data' => [
+                'model' => \yii\helpers\StringHelper::basename(get_class($model))
+            ]
         ]
     ]); ?>
 
     <?= $form->field($model, 'name'); ?>
 
     <?= $form->field($model, 'alias')->textInput([
-        'disabled' => ($model->id) ? true : false,
+        'disabled' => ($model->id && $model->status == $model::STATUS_PUBLISHED) ? true : false,
         'maxlength' => true
     ]); ?>
 
@@ -76,10 +79,13 @@ use wdmg\widgets\SelectInput;
                     <div id="collapse-link" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="heading-link">
                         <div class="panel-body">
                             <?php $linkForm = ActiveForm::begin([
-                                'id' => "menuItemForm",
+                                'id' => "addMenuItemForm",
                                 'enableAjaxValidation' => true,
                                 'options' => [
-                                    'enctype' => 'multipart/form-data'
+                                    'enctype' => 'multipart/form-data',
+                                    'data' => [
+                                        'model' => \yii\helpers\StringHelper::basename(get_class($model->item))
+                                    ]
                                 ]
                             ]); ?>
                             <?= $linkForm->field($model->item, 'name')->textInput(); ?>
@@ -91,9 +97,10 @@ use wdmg\widgets\SelectInput;
                             <?= $linkForm->field($model->item, 'target_blank', [
                                 'template' => '{input} - {label}{error}',
                             ])->checkbox(['label' => null])->label(Yii::t('app/modules/menu', 'Open as target _blank')) ?>
+                            <?= $linkForm->field($model->item, 'type')->hiddenInput(['value' => $model->item::TYPE_LINK])->label(false); ?>
                             <hr/>
                             <div class="form-group">
-                                <button class="btn btn-primary btn-sm" type="button" data-rel="add"><?= Yii::t('app/modules/menu', 'Add to menu'); ?></button>
+                                <button class="btn btn-primary btn-sm" type="button" data-rel="add" disabled="true"><?= Yii::t('app/modules/menu', 'Add to menu'); ?></button>
                             </div>
                             <?php ActiveForm::end(); ?>
                         </div>
@@ -153,7 +160,7 @@ use wdmg\widgets\SelectInput;
                                                 <?= Yii::t('app/modules/menu', '- Select all'); ?>
                                             </label>
                                         </div>
-                                        <button class="btn btn-primary btn-sm" type="button" data-rel="add"><?= Yii::t('app/modules/menu', 'Add to menu'); ?></button>
+                                        <button class="btn btn-primary btn-sm" type="button" data-rel="add" disabled="true"><?= Yii::t('app/modules/menu', 'Add to menu'); ?></button>
                                     </div>
                                 </div>
                             </div>
@@ -169,25 +176,46 @@ use wdmg\widgets\SelectInput;
 </div>
 <?php $this->registerJs(<<< JS
 $(document).ready(function() {
-    function afterValidateAttribute(event, attribute, messages)
-    {
+    
+    function afterValidateAttribute(event, attribute, messages) {
         if (attribute.name && !attribute.alias && messages.length == 0) {
-            var form = $(event.target);
+
+            let form = $(event.target);
+            let url = new URL(form.attr('action').toString(), window.location.origin);
+            
+            if (form.data('model'))
+                url.searchParams.append('model', form.data('model'));
+            
             $.ajax({
-                    type: form.attr('method'),
-                    url: form.attr('action'),
-                    data: form.serializeArray(),
+                type: form.attr('method'),
+                url: url.href,
+                data: form.serializeArray(),
+            }).done(function(data) {
+                
+                console.log(data.success);
+                
+                if (data.success == true) {
+                    form.find('button[type="submit"], button[data-rel="add"]').prop('disabled', false);
+                } else {
+                    form.find('button[type="submit"], button[data-rel="add"]').prop('disabled', true);
                 }
-            ).done(function(data) {
+                
                 if (data.alias && form.find('#menu-alias').val().length == 0) {
                     form.find('#menu-alias').val(data.alias);
                     form.yiiActiveForm('validateAttribute', 'menu-alias');
                 }
+                
             });
             return false;
         }
     }
-    $("#addMenuForm").on("afterValidateAttribute", afterValidateAttribute);
+    
+    if ($('#addMenuForm').length)
+        $("#addMenuForm").on("afterValidateAttribute", afterValidateAttribute);
+    
+    if ($('#addMenuItemForm').length)
+        $("#addMenuItemForm").on("afterValidateAttribute", afterValidateAttribute);
+    
 });
 JS
 ); ?>

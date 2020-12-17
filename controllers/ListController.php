@@ -150,13 +150,32 @@ class ListController extends Controller
         $model->item = new MenuItems();
 
         if (Yii::$app->request->isAjax) {
-            if ($model->load(Yii::$app->request->post())) {
-                if ($model->validate())
-                    $success = true;
-                else
-                    $success = false;
+            if (Yii::$app->request->get('model', null) == "Menu") {
 
-                return $this->asJson(['success' => $success, 'alias' => $model->alias, 'errors' => $model->errors]);
+                if ($model->load(Yii::$app->request->post())) {
+
+                    if ($model->validate())
+                        $success = true;
+                    else
+                        $success = false;
+
+                    return $this->asJson(['success' => $success, 'alias' => $model->alias, 'errors' => $model->errors]);
+                }
+
+            } elseif (Yii::$app->request->get('model', null) == "MenuItems") {
+
+                if ($model->item->load(Yii::$app->request->post())) {
+
+                    if ($model->item->validate())
+                        $success = true;
+                    else
+                        $success = false;
+
+                    return $this->asJson(['success' => $success, 'errors' => $model->item->errors]);
+                }
+
+            } else {
+                return $this->asJson([]);
             }
         } else {
             if ($model->load(Yii::$app->request->post())) {
