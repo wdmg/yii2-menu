@@ -37,17 +37,20 @@ use wdmg\widgets\SelectInput;
     <?= $form->field($model, 'description')->textarea(['rows' => 2]) ?>
 
     <?php if ($model->id) : ?>
-        <div class="form-group drag-menu">
+        <div id="dragMenu" class="form-group drag-menu">
             <label for="menuItems"><?= Yii::t('app/modules/menu', 'Menu items') ?></label>
             <?php if ($count = count($model->getMenuItems())) : ?>
                 <ul id="menuItems" class="panel-group menu-items" role="tablist" aria-multiselectable="true"></ul>
             <?php else : ?>
                 <ul id="menuItems" class="panel-group menu-items no-items" role="tablist" aria-multiselectable="true"><?= Yii::t('app/modules/menu', 'Add menu items from the right column.') ?></ul>
             <?php endif; ?>
-            <div class="droppable delete-area">Delete Item</div>
-            <textarea id="menuOptions" class="form-control-plaintext" rows="12" readonly></textarea>
+            <div class="droppable delete-area">
+                <i class="fa fa-trash mr-2"></i>&nbsp;Delete Item
+            </div>
         </div>
     <?php endif; ?>
+
+    <?= $form->field($model, 'items')->hiddenInput()->label(false); ?>
 
     <?= $form->field($model, 'status')->widget(SelectInput::class, [
         'items' => $model->getStatusesList(false),
@@ -55,11 +58,12 @@ use wdmg\widgets\SelectInput;
             'class' => 'form-control'
         ]
     ]); ?>
-        <hr/>
-        <div class="form-group">
-            <?= Html::a(Yii::t('app/modules/menu', '&larr; Back to list'), ['list/index'], ['class' => 'btn btn-default pull-left']) ?>&nbsp;
-            <?= Html::submitButton(Yii::t('app/modules/menu', 'Save'), ['class' => 'btn btn-success pull-right']) ?>
-        </div>
+
+    <hr/>
+    <div class="form-group">
+        <?= Html::a(Yii::t('app/modules/menu', '&larr; Back to list'), ['list/index'], ['class' => 'btn btn-default pull-left']) ?>&nbsp;
+        <?= Html::submitButton(Yii::t('app/modules/menu', 'Save'), ['class' => 'btn btn-success pull-right']) ?>
+    </div>
     <?php ActiveForm::end(); ?>
     </div>
 <?php if ($model->id) : ?>
@@ -68,10 +72,17 @@ use wdmg\widgets\SelectInput;
             <label for="menuSources"><?= Yii::t('app/modules/menu', 'Available items') ?></label>
             <div id="menuSources" class="panel-group menu-sources" role="tablist" aria-multiselectable="true">
             <?php if ($model->item) : ?>
-                <div class="panel panel-default">
-                    <div class="panel-heading" role="tab" id="heading-link">
+                <div id="source-link" class="panel panel-default">
+                    <div id="heading-link" class="panel-heading" role="tab">
                         <h4 class="panel-title">
-                            <a role="button" data-toggle="collapse" data-parent="#menuSources" href="#collapse-link" aria-expanded="true" aria-controls="collapse-link">
+                            <a href="#collapse-link"
+                               data-toggle="collapse"
+                               data-parent="#menuSources"
+                               data-type="link"
+                               data-name="<?= Yii::t('app/modules/menu', 'Custom link') ?>"
+                               aria-expanded="true"
+                               aria-controls="collapse-link"
+                               role="button">
                                 <?= Yii::t('app/modules/menu', 'Custom link') ?>
                             </a>
                         </h4>
@@ -110,12 +121,17 @@ use wdmg\widgets\SelectInput;
             <?php
                 if ($sources = $model->getSourcesList(false)) {
                     foreach ($sources as $source) { ?>
-                        <div class="panel panel-default">
-                            <div class="panel-heading" role="tab" id="heading-<?= $source['id']; ?>">
+                        <div id="source-<?= $source['id']; ?>" class="panel panel-default">
+                            <div id="heading-<?= $source['id']; ?>" class="panel-heading" role="tab">
                                 <h4 class="panel-title">
-                                    <a role="button" data-toggle="collapse" data-parent="#menuSources"
-                                       href="#collapse-<?= $source['id']; ?>" aria-expanded="false"
-                                       aria-controls="collapseOne">
+                                    <a href="#collapse-<?= $source['id']; ?>"
+                                       data-toggle="collapse"
+                                       data-parent="#menuSources"
+                                       data-type="<?= $source['id']; ?>"
+                                       data-name="<?= $source['name']; ?>"
+                                       aria-expanded="false"
+                                       aria-controls="collapseOne"
+                                       role="button">
                                         <?= $source['name']; ?> <span class="text-muted">(<?= count($source['items']); ?>)</span>
                                     </a>
                                 </h4>
@@ -226,7 +242,8 @@ JS
         'enableAjaxValidation' => true,
         'options' => [
             'enctype' => 'multipart/form-data',
-            'data-key' => '{{source}}-{{id}}'
+            'data-key' => '{{id}}',
+            'data-type' => '{{source}}'
         ]
     ]); ?>
     <?= $itemForm->field($model->item, 'name')->textInput(['value' => '{{name}}']); ?>
@@ -234,10 +251,10 @@ JS
     <?= $itemForm->field($model->item, 'url')->textInput(['value' => '{{url}}']); ?>
     <?= $itemForm->field($model->item, 'only_auth', [
         'template' => '{input} - {label}{error}',
-    ])->checkbox(['label' => null])->label(Yii::t('app/modules/menu', 'Only for signed users')) ?>
+    ])->checkbox(['value' => '{{only_auth}}', 'label' => null])->label(Yii::t('app/modules/menu', 'Only for signed users')) ?>
     <?= $itemForm->field($model->item, 'target_blank', [
         'template' => '{input} - {label}{error}',
-    ])->checkbox(['label' => null])->label(Yii::t('app/modules/menu', 'Open as target _blank')) ?>
+    ])->checkbox(['value' => '{{target_blank}}', 'label' => null])->label(Yii::t('app/modules/menu', 'Open as target _blank')) ?>
     <?= $itemForm->field($model->item, 'parent_id')->hiddenInput(['value' => '{{parent_id}}'])->label(false); ?>
     <?= $itemForm->field($model->item, 'menu_id')->hiddenInput(['value' => $model->id])->label(false); ?>
     <?= $itemForm->field($model->item, 'type')->hiddenInput(['value' => '{{source}}'])->label(false); ?>

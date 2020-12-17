@@ -35,6 +35,7 @@ class Menu extends ActiveRecord
 
     private $module;
     public $item;
+    public $items;
 
     /**
      * {@inheritdoc}

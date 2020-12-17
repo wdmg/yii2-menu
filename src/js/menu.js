@@ -2,17 +2,17 @@ var DragMenu = new function() {
 
     var self = this;
     var dragObject = {};
+    var dragMenu = document.getElementById('dragMenu');
     var menuItemsList = document.getElementById('menuItems');
     var menuSources = document.getElementById('menuSources');
-    var addMenuItemForm = document.getElementById('addMenuItemForm');
-    var panels = menuSources.querySelectorAll(".panel .panel-body");
-    var menuItemsList = document.getElementById('menuItems');
+    var panels = menuSources.querySelectorAll(".panel");
     var formTemplate = document.getElementById('itemFormTemplate');
     var itemTemplate = document.getElementById('menuItemTemplate');
+    var addMenuItemForm = document.getElementById('addMenuItemForm');
 
     const removeElements = (elms) => elms.forEach(elem => elem.remove());
 
-    const transformData = (ul, json = true) => {
+    const transformData = (list, json = true) => {
         let tree = [];
 
         /**
@@ -21,16 +21,23 @@ var DragMenu = new function() {
          * @param {HTMLLIElement} e   LI-элемент с data-id
          * @param {Array}         ref Ссылка на дерево, куда добавлять свойства
          */
-        function push(e, ref) {
+        function push(e, ref, node = 'UL') {
 
+            let itemForm = e.querySelector('form[data-key]');
             let pointer = { // Берём атрибут id элемента
-                itemId: e.id
+                id: itemForm.getAttribute('data-key') || null,
+                type: itemForm.getAttribute('data-type') || null,
+                name: itemForm.querySelector('input[name="MenuItems[name]"]').value || null,
+                title: itemForm.querySelector('input[name="MenuItems[title]"]').value || null,
+                url: itemForm.querySelector('input[name="MenuItems[url]"]').value || null,
+                auth: itemForm.querySelector('input[name="MenuItems[only_auth]"]').value || null,
+                target: itemForm.querySelector('input[name="MenuItems[target_blank]"]').value || null,
             };
 
             if (e.childElementCount) { // Если есть потомки
                 pointer.children = []; // Создаём свойство для них
                 Array.from(e.children).forEach(i => { // Перебираем... хм... детей (по косточкам!)
-                    if (i.nodeName === 'UL') { // Если есть ещё один контейнер UL, перебираем его
+                    if (i.nodeName === node.toUpperCase()) { // Если есть ещё один контейнер UL, перебираем его
                         Array.from(i.children).forEach(e => {
                             push(e, pointer.children); // Вызываем push на новых li, но ссылка на древо теперь - это массив children указателя
                         });
@@ -42,8 +49,8 @@ var DragMenu = new function() {
         }
 
         // Проходимся по всем li переданного ul
-        Array.from(ul.children).forEach(e => {
-            push(e, tree);
+        Array.from(list.children).forEach(e => {
+            push(e, tree, 'UL');
         });
 
         return json ? JSON.stringify(tree) : tree;
@@ -98,9 +105,6 @@ var DragMenu = new function() {
     }
 
     var addMenuItem = (item) => {
-
-        console.log(item);
-
         if (menuItemsList && itemTemplate && 'content' in document.createElement('template')) {
 
             if (menuItemsList.classList.contains('no-items')) {
@@ -108,30 +112,40 @@ var DragMenu = new function() {
                 menuItemsList.innerHTML = "";
             }
 
-            //let data = item.dataset;
             let data = item;
             data.form = fillTemplate(formTemplate.innerHTML, data);
 
             let content = fillTemplate(itemTemplate.innerHTML, data);
-            menuItemsList.append(htmlToElement(content));
-        }
-    };
 
+            menuItemsList.append(htmlToElement(content));
+            return self.onAddSuccess(dragObject, menuItemsList);
+
+        }
+        return self.onAddFailture(dragObject, menuItemsList);
+    };
 
     if (addMenuItemForm.length) {
         let addButton = addMenuItemForm.querySelector('button[data-rel="add"]');
         addButton.addEventListener("click", (event) => {
+
+            let collapseToggler = menuSources.querySelector('#source-link a[data-toggle="collapse"]');
+
+            console.log(collapseToggler);
+
             let item = {
-                'id': "1",
-                'source': "links",
-                'source_name': "Links",
-                'name': addMenuItemForm.querySelector('input[name="MenuItems[name]"]').value,
-                'title': addMenuItemForm.querySelector('input[name="MenuItems[title]"]').value,
-                'url': addMenuItemForm.querySelector('input[name="MenuItems[url]"]').value,
-                'only_auth': addMenuItemForm.querySelector('input[name="MenuItems[only_auth]"]').value,
-                'target_blank': addMenuItemForm.querySelector('input[name="MenuItems[target_blank]"]').value,
+                'id': null,
+                'source': collapseToggler.dataset.type || null,
+                'source_name': collapseToggler.dataset.name || null,
+                'name': addMenuItemForm.querySelector('input[name="MenuItems[name]"]').value || false,
+                'title': addMenuItemForm.querySelector('input[name="MenuItems[title]"]').value || false,
+                'url': addMenuItemForm.querySelector('input[name="MenuItems[url]"]').value || false,
+                'only_auth': addMenuItemForm.querySelector('input[name="MenuItems[only_auth]"]').value || false,
+                'target_blank': addMenuItemForm.querySelector('input[name="MenuItems[target_blank]"]').value || false,
             };
-            addMenuItem(item);
+
+            if (addMenuItem(item))
+                addMenuItemForm.reset();
+
         });
     }
 
@@ -186,7 +200,7 @@ var DragMenu = new function() {
         }
     });
 
-    
+
     var createDroppable = (e) => {
         let top = e.clientY || e.targetTouches[0].pageY;
         let left = e.clientX || e.targetTouches[0].pageX;
@@ -279,6 +293,9 @@ var DragMenu = new function() {
             avatar.style.top = old.top;
             avatar.style.zIndex = old.zIndex;
             //console.log('Drag cancel, rollback');
+            /*setTimeout(function() {
+                document.querySelector('.droppable.delete-area').classList.remove('show');
+            }, 500);*/
         };
 
         return avatar;
@@ -296,7 +313,7 @@ var DragMenu = new function() {
 
         let deleteArea = document.querySelector(".droppable.delete-area");
         if (deleteArea)
-            deleteArea.hidden = false;
+            deleteArea.classList.add('show');
 
     }
     var finishDrag = (e) => {
@@ -311,7 +328,7 @@ var DragMenu = new function() {
         avatar.style = '';
         avatar.classList.remove('drag-in');
 
-        let droppable = menuItemsList.querySelector(".droppable");
+        let droppable = dragMenu.querySelector(".droppable");
         if (droppable.classList.contains('delete-area')) {
             dragObject = {};
             avatar.remove();
@@ -343,12 +360,15 @@ var DragMenu = new function() {
         for (let empty of emptyList)
             empty.remove();
 
-        dragObject.data = transformData(menuItemsList.querySelector(".menu-items"));
+        //dragObject.data = transformData(menuItemsList.querySelector(".menu-items"));
+        dragObject.data = transformData(menuItemsList);
         removeElements(menuItemsList.querySelectorAll(".droppable:not(.delete-area)"));
 
         let deleteArea = document.querySelector(".droppable.delete-area");
-        if (deleteArea)
-            deleteArea.hidden = true;
+        setTimeout(function() {
+            if (deleteArea)
+                deleteArea.classList.remove('show');
+        }, 500);
 
         if (!dropElem)
             self.onDragCancel(dragObject);
@@ -374,7 +394,7 @@ var DragMenu = new function() {
         return elem.closest('.droppable');
     }
 
-    
+
     var onMouseDown = (e) => {
 
         if (e.type === "mousedown" && e.which != 1)
@@ -448,26 +468,40 @@ var DragMenu = new function() {
     }
 
 
-    menuItemsList.onmousedown = onMouseDown;
-    menuItemsList.ontouchstart = onMouseDown;
-    menuItemsList.onmousemove = onMouseMove;
-    menuItemsList.ontouchmove = onMouseMove;
-    menuItemsList.onmouseup = onMouseUp;
-    menuItemsList.ontouchend = onMouseUp;
+    dragMenu.onmousedown = onMouseDown;
+    dragMenu.ontouchstart = onMouseDown;
+    dragMenu.onmousemove = onMouseMove;
+    dragMenu.ontouchmove = onMouseMove;
+    dragMenu.onmouseup = onMouseUp;
+    dragMenu.ontouchend = onMouseUp;
+
+    this.getItemsData = function() {
+        return transformData(menuItemsList);
+    };
 
     this.onDragEnd = function(dragObject, dropElem) {};
     this.onDragCancel = function(dragObject) {};
+
+    this.onAddSuccess = function(dragObject, menuItemsList) {};
+    this.onAddFailture = function(dragObject, menuItemsList) {};
 
 }
 
 DragMenu.onDragCancel = function (dragObject) {
     if (dragObject.data) {
-        document.getElementById('menuOptions').innerText = dragObject.data;
+        let form = document.getElementById('addMenuForm');
+        form.querySelector('input#menu-items').value = dragObject.data;
     }
 };
 
 DragMenu.onDragEnd = function (dragObject, dropElem) {
     if (dragObject.data) {
-        document.getElementById('menuOptions').innerText = dragObject.data;
+        let form = document.getElementById('addMenuForm');
+        form.querySelector('input#menu-items').value = dragObject.data;
     }
+};
+
+DragMenu.onAddSuccess = function (dragObject, menuItemsList) {
+    let form = document.getElementById('addMenuForm');
+    form.querySelector('input#menu-items').value = this.getItemsData();
 };

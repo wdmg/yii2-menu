@@ -4,7 +4,7 @@
     margin-bottom: 1.5rem;
     color: #a7a7a7;
     border: 1px dashed #c7c7c7;
-    padding: 2rem 12px;
+    padding: 2rem 12px !important;
     border-radius: 4px;
   }
 }
@@ -143,6 +143,19 @@
     border-color: #a71d2a;
     color: #a71d2a;
     background: #f8d7da;
+    opacity: 0;
+    transition: opacity 0.3 linear;
+    &.show {
+      display: inline-flex !important;
+      opacity: 0.8;
+      transition: opacity 0.3 linear;
+      justify-content: center;
+    }
+    &:hover, &:focus {
+      &.show {
+        opacity: 1;
+      }
+    }
   }
 }
 
