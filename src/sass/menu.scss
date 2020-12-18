@@ -143,11 +143,13 @@
     border-color: #a71d2a;
     color: #a71d2a;
     background: #f8d7da;
+    height: 0;
     opacity: 0;
-    transition: opacity 0.3 linear;
+    transition: height, opacity 0.3 linear;
     &.show {
       display: inline-flex !important;
       opacity: 0.8;
+      height: auto;
       transition: opacity 0.3 linear;
       justify-content: center;
     }
