@@ -47,7 +47,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     'class' => 'text-center'
                 ],
                 'value' => function($data) {
-                    if ($count = count($data->getMenuItems())) {
+                    if ($count = count($data->getItems())) {
                         return Yii::t('app/modules/menu', '{count} items', [
                             'count' => $count
                         ]);

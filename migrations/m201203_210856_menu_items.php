@@ -27,9 +27,9 @@ class m201203_210856_menu_items extends Migration
             'name' => $this->string(128)->notNull(),
             'title' => $this->string(255)->null(),
 
-            'url' => $this->string(255)->notNull(),
-            'type' => $this->tinyInteger(1)->notNull()->defaultValue(1),
+            'source_type' => $this->tinyInteger(1)->notNull()->defaultValue(1),
             'source_id' => $this->integer(11)->null(),
+            'source_url' => $this->string(255)->notNull(),
 
             'only_auth' => $this->tinyInteger(1)->null(),
             'target_blank' => $this->tinyInteger(1)->null(),

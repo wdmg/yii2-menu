@@ -30,8 +30,8 @@ var DragMenu = new function() {
                 name: itemForm.querySelector('input[name="MenuItems[name]"]').value || null,
                 title: itemForm.querySelector('input[name="MenuItems[title]"]').value || null,
                 url: itemForm.querySelector('input[name="MenuItems[url]"]').value || null,
-                auth: itemForm.querySelector('input[name="MenuItems[only_auth]"]').value || null,
-                target: itemForm.querySelector('input[name="MenuItems[target_blank]"]').value || null,
+                only_auth: itemForm.querySelector('input[name="MenuItems[only_auth]"]').value || null,
+                target_blank: itemForm.querySelector('input[name="MenuItems[target_blank]"]').value || null,
             };
 
             if (e.childElementCount) { // Если есть потомки

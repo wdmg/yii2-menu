@@ -39,7 +39,7 @@ use wdmg\widgets\SelectInput;
     <?php if ($model->id) : ?>
         <div id="dragMenu" class="form-group drag-menu">
             <label for="menuItems"><?= Yii::t('app/modules/menu', 'Menu items') ?></label>
-            <?php if ($count = count($model->getMenuItems())) : ?>
+            <?php if ($count = count($model->getItems())) : ?>
                 <ul id="menuItems" class="panel-group menu-items" role="tablist" aria-multiselectable="true"></ul>
             <?php else : ?>
                 <ul id="menuItems" class="panel-group menu-items no-items" role="tablist" aria-multiselectable="true"><?= Yii::t('app/modules/menu', 'Add menu items from the right column.') ?></ul>
@@ -50,7 +50,7 @@ use wdmg\widgets\SelectInput;
         </div>
     <?php endif; ?>
 
-    <?= $form->field($model, 'items')->hiddenInput()->label(false); ?>
+    <?= $form->field($model, 'items')->hiddenInput(['value' => $model->items])->label(false); ?>
 
     <?= $form->field($model, 'status')->widget(SelectInput::class, [
         'items' => $model->getStatusesList(false),

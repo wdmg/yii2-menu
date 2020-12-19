@@ -148,6 +148,15 @@ class Menu extends ActiveRecord
     /**
      * {@inheritdoc}
      */
+    public function afterFind()
+    {
+        $this->items = self::getItems($this->id, true);
+        parent::afterFind();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function beforeSave($insert)
     {
 
@@ -157,8 +166,63 @@ class Menu extends ActiveRecord
         if (is_string($this->items) && JsonValidator::isValid($this->items)) {
             $this->items = \yii\helpers\Json::decode($this->items);
             $menuItems = \wdmg\helpers\ArrayHelper::flattenTree($this->items, 'children', 'parent_id');
-            var_export($menuItems);
-            die();
+
+            $errors = [];
+            $allParents = [];
+            foreach($menuItems as $key => $item) {
+
+                unset($item['id']);
+
+                $model = new MenuItems();
+                $sourceTypes = $model->getTypesList(false, true);
+
+                //$model->id = 0;
+                $model->menu_id = $this->id;
+
+                if (isset($item['parent_id'])) {
+                    $parent_id = $item['parent_id'];
+                    if (isset($allParents[$parent_id]))
+                        $model->parent_id = $allParents[$parent_id];
+                    else
+                        $model->parent_id = null;
+                }
+
+                if (isset($item['name']))
+                    $model->name = $item['name'];
+
+                if (isset($item['title']))
+                    $model->title = $item['title'];
+
+                if (isset($item['url']))
+                    $model->source_url = $item['url'];
+
+
+                if (isset($item['type'])) {
+                    if ($type = array_search($item['type'], $sourceTypes))
+                        $model->source_type = array_search($item['type'], $sourceTypes);
+                    else
+                        $model->source_type = 0; // Default type for unrecornized menu items
+                }
+
+                if (isset($item['source_id']))
+                    $model->source_id = intval($item['source_id']);
+
+                if (isset($item['only_auth']))
+                    $model->only_auth = intval($item['only_auth']);
+
+                if (isset($item['target_blank']))
+                    $model->target_blank = intval($item['target_blank']);
+
+                if ($model->validate()) {
+                    if ($model->save()) {
+                        $parents[$key] = $model->id;
+                    }
+                } else {
+                    $errors[] = $model->errors;
+                }
+            }
+
+            //var_export($errors);
         }
 
         return parent::beforeSave($insert);
@@ -226,15 +290,14 @@ class Menu extends ActiveRecord
         return null;
     }
 
-    public function getMenuItems($menu_id = null, $asJson = false)
+    public function getItems($menu_id = null, $asJson = false)
     {
         if ($menu_id)
-            $items = MenuItems::find()->where(['menu_id' => $menu_id])->all();
+            $items = MenuItems::find()->where(['menu_id' => $menu_id]);
         else
-            $items = MenuItems::find()->where(['menu_id' => $this->id])->all();
+            $items = MenuItems::find()->where(['menu_id' => $this->id]);
 
-
-        return ($asJson) ? json_encode($items->asArray()) : $items;
+        return ($asJson) ? json_encode($items->asArray()->all()) : $items->all();
     }
 
     public function getSourcesList($asJson = false)

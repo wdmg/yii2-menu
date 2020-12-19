@@ -19,9 +19,9 @@ use wdmg\base\models\ActiveRecord;
  * @property int $parent_id
  * @property string $name
  * @property string $title
- * @property int $type
- * @property string $url
- * @property string $source
+ * @property int $source_type
+ * @property string $source_url
+ * @property string $source_source
  * @property int $only_auth
  * @property int $target_blank
  * @property string $created_at
@@ -78,12 +78,12 @@ class MenuItems extends ActiveRecord
     public function rules()
     {
         $rules = [
-            [['name', 'url', 'type'], 'required'],
+            [['name', 'source_url', 'source_type'], 'required'],
             ['name', 'string', 'min' => 3, 'max' => 128],
-            [['title', 'url'], 'string', 'max' => 255],
-            [['menu_id', 'parent_id', 'type', 'source_id', 'only_auth', 'target_blank'], 'integer'],
-            ['type', 'default', 'value' => self::TYPE_LINK],
-            ['type', 'in', 'range' => array_keys($this->getTypesList(false))],
+            [['title', 'source_url'], 'string', 'max' => 255],
+            [['menu_id', 'parent_id', 'source_type', 'source_id', 'only_auth', 'target_blank'], 'integer'],
+            ['source_type', 'default', 'value' => self::TYPE_LINK],
+            ['source_type', 'in', 'range' => array_keys($this->getTypesList(false))],
             [['created_at', 'updated_at'], 'safe'],
         ];
 
@@ -105,8 +105,8 @@ class MenuItems extends ActiveRecord
             'parent_id' => Yii::t('app/modules/menu', 'Parent ID'),
             'name' => Yii::t('app/modules/menu', 'Name'),
             'title' => Yii::t('app/modules/menu', 'Title'),
-            'type' => Yii::t('app/modules/menu', 'Type'),
-            'url' => Yii::t('app/modules/menu', 'URL'),
+            'source_type' => Yii::t('app/modules/menu', 'Type'),
+            'source_url' => Yii::t('app/modules/menu', 'URL'),
             'source_id' => Yii::t('app/modules/menu', 'Source ID'),
             'only_auth' => Yii::t('app/modules/menu', 'Only auth'),
             'target_blank' => Yii::t('app/modules/menu', 'Target blank'),
@@ -118,21 +118,9 @@ class MenuItems extends ActiveRecord
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function beforeSave($insert)
-    {
-
-        if (is_string($this->status))
-            $this->status = intval($this->status);
-
-        return parent::beforeSave($insert);
-    }
-
-    /**
      * @return array
      */
-    public function getTypesList($allStatuses = false)
+    public function getTypesList($allStatuses = false, $assocName = false)
     {
         $list = [];
         if ($allStatuses) {
@@ -142,12 +130,12 @@ class MenuItems extends ActiveRecord
         }
 
         $list = ArrayHelper::merge($list, [
-            self::TYPE_LINK => Yii::t('app/modules/menu', 'Custom Link'),
-            self::TYPE_PAGE => Yii::t('app/modules/menu', 'Inner Page'),
-            self::TYPE_NEWS => Yii::t('app/modules/menu', 'News Item'),
-            self::TYPE_BLOG => Yii::t('app/modules/menu', 'Blog Post'),
-            self::TYPE_BLOG_CATS => Yii::t('app/modules/menu', 'Blog Cats'),
-            self::TYPE_MEDIA_CATS => Yii::t('app/modules/menu', 'Media Cats'),
+            self::TYPE_LINK => ($assocName) ? 'link' : Yii::t('app/modules/menu', 'Custom Link'),
+            self::TYPE_PAGE => ($assocName) ? 'pages' : Yii::t('app/modules/menu', 'Inner Page'),
+            self::TYPE_NEWS => ($assocName) ? 'news' : Yii::t('app/modules/menu', 'News Item'),
+            self::TYPE_BLOG => ($assocName) ? 'blog' : Yii::t('app/modules/menu', 'Blog Post'),
+            self::TYPE_BLOG_CATS => ($assocName) ? 'blog_cats' : Yii::t('app/modules/menu', 'Blog Cats'),
+            self::TYPE_MEDIA_CATS => ($assocName) ? 'media_cats' : Yii::t('app/modules/menu', 'Media Cats'),
         ]);
 
         return $list;
@@ -157,18 +145,13 @@ class MenuItems extends ActiveRecord
      * Finds the model based on its primary key value.
      * If the model is not found, null will be returned.
      *
-     * @param integer/string $id or string of $alias
+     * @param integer/string $id
      * @return ActiveRecord model or null
      */
     public static function findModel($id)
     {
-        if (is_integer($id)) {
-            if (($model = self::findOne(['id' => intval($id)])) !== null)
-                return $model;
-        } else if (is_string($id)) {
-            if (($model = self::findOne(['alias' => trim($id)])) !== null)
-                return $model;
-        }
+        if (($model = self::findOne(['id' => intval($id)])) !== null)
+            return $model;
 
         return null;
     }
