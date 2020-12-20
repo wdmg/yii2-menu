@@ -3,7 +3,7 @@ var DragMenu = new function() {
     var self = this;
     var dragObject = {};
     var dragMenu = document.getElementById('dragMenu');
-    var menuItemsList = document.getElementById('menuItems');
+    var menuItems = document.getElementById('menuItems');
     var menuSources = document.getElementById('menuSources');
     var panels = menuSources.querySelectorAll(".panel");
     var formTemplate = document.getElementById('itemFormTemplate');
@@ -104,12 +104,12 @@ var DragMenu = new function() {
         };
     }
 
-    var addMenuItem = (item) => {
-        if (menuItemsList && itemTemplate && 'content' in document.createElement('template')) {
+    var addMenuItem = (item, parent = null) => {
+        if (menuItems && itemTemplate && 'content' in document.createElement('template')) {
 
-            if (menuItemsList.classList.contains('no-items')) {
-                menuItemsList.classList.remove('no-items');
-                menuItemsList.innerHTML = "";
+            if (menuItems.classList.contains('no-items')) {
+                menuItems.classList.remove('no-items');
+                menuItems.innerHTML = "";
             }
 
             let data = item;
@@ -117,11 +117,25 @@ var DragMenu = new function() {
 
             let content = fillTemplate(itemTemplate.innerHTML, data);
 
-            menuItemsList.append(htmlToElement(content));
-            return self.onAddSuccess(dragObject, menuItemsList);
+            if (parent) {
+
+                let list = document.createElement('ul');
+                list.classList.add('menu-items');
+                list.setAttribute('role', "tablist");
+
+                let listItem = htmlToElement(content);
+                listItem.classList.add('sub-item');
+                list.append(listItem);
+
+                menuItems.querySelector('[data-id="' + parent + '"]').append(list);
+            } else {
+                menuItems.append(htmlToElement(content));
+            }
+
+            return self.onAddSuccess(dragObject, menuItems);
 
         }
-        return self.onAddFailture(dragObject, menuItemsList);
+        return self.onAddFailture(dragObject, menuItems);
     };
 
     if (addMenuItemForm.length) {
@@ -221,7 +235,7 @@ var DragMenu = new function() {
         droppable.style.height = dragObject.avatar.offsetHeight + 'px';
 
         if (!droppable.isEqualNode(dragObject.droppable)) {
-            removeElements(menuItemsList.querySelectorAll(".droppable:not(.delete-area)"));
+            removeElements(menuItems.querySelectorAll(".droppable:not(.delete-area)"));
             dragObject.droppable = null;
         }
         dragObject.droppable = droppable;
@@ -232,7 +246,7 @@ var DragMenu = new function() {
 
             //console.log('target', target);
 
-            removeElements(menuItemsList.querySelectorAll(".droppable:not(.delete-area)"));
+            removeElements(menuItems.querySelectorAll(".droppable:not(.delete-area)"));
 
             let top = e.clientY || e.targetTouches[0].pageY;
             let left = e.clientX || e.targetTouches[0].pageX;
@@ -351,7 +365,7 @@ var DragMenu = new function() {
         }
 
         // selects all <ul> elements, then filters the collection
-        let lists = menuItemsList.querySelectorAll('ul');
+        let lists = menuItems.querySelectorAll('ul');
         // keep only those elements with no child-elements
         let emptyList = [...lists].filter(elem => {
             return elem.children.length === 0;
@@ -360,9 +374,9 @@ var DragMenu = new function() {
         for (let empty of emptyList)
             empty.remove();
 
-        //dragObject.data = transformData(menuItemsList.querySelector(".menu-items"));
-        dragObject.data = transformData(menuItemsList);
-        removeElements(menuItemsList.querySelectorAll(".droppable:not(.delete-area)"));
+        //dragObject.data = transformData(menuItems.querySelector(".menu-items"));
+        dragObject.data = transformData(menuItems);
+        removeElements(menuItems.querySelectorAll(".droppable:not(.delete-area)"));
 
         let deleteArea = document.querySelector(".droppable.delete-area");
         setTimeout(function() {
@@ -467,24 +481,39 @@ var DragMenu = new function() {
         dragObject = {};
     }
 
-
-    dragMenu.onmousedown = onMouseDown;
-    dragMenu.ontouchstart = onMouseDown;
-    dragMenu.onmousemove = onMouseMove;
-    dragMenu.ontouchmove = onMouseMove;
-    dragMenu.onmouseup = onMouseUp;
-    dragMenu.ontouchend = onMouseUp;
-
     this.getItemsData = function() {
-        return transformData(menuItemsList);
+        return transformData(menuItems);
     };
 
+    this.buildMenuItems = function(data) {
+        let items = [...data].filter(item => {
+            if (typeof item == "object") {
+                console.log(item);
+                let parent_id = item.parent_id
+                addMenuItem(item, parent_id);
+            }
+        });
+    };
+
+    this.onInit = function(menuItems) { };
     this.onDragEnd = function(dragObject, dropElem) {};
     this.onDragCancel = function(dragObject) {};
 
-    this.onAddSuccess = function(dragObject, menuItemsList) {};
-    this.onAddFailture = function(dragObject, menuItemsList) {};
+    this.onAddSuccess = function(dragObject, menuItems) {};
+    this.onAddFailture = function(dragObject, menuItems) {};
 
+    document.addEventListener("DOMContentLoaded", function(event) {
+        if (dragMenu && menuItems) {
+            console.log('dragMenu.onload');
+            dragMenu.onmousedown = onMouseDown;
+            dragMenu.ontouchstart = onMouseDown;
+            dragMenu.onmousemove = onMouseMove;
+            dragMenu.ontouchmove = onMouseMove;
+            dragMenu.onmouseup = onMouseUp;
+            dragMenu.ontouchend = onMouseUp;
+            self.onInit();
+        }
+    });
 }
 
 DragMenu.onDragCancel = function (dragObject) {
@@ -501,7 +530,13 @@ DragMenu.onDragEnd = function (dragObject, dropElem) {
     }
 };
 
-DragMenu.onAddSuccess = function (dragObject, menuItemsList) {
+DragMenu.onAddSuccess = function (dragObject, menuItems) {
     let form = document.getElementById('addMenuForm');
     form.querySelector('input#menu-items').value = this.getItemsData();
+};
+
+DragMenu.onInit = function () {
+    let form = document.getElementById('addMenuForm');
+    let data = JSON.parse(form.querySelector('input#menu-items').value);
+    this.buildMenuItems(data);
 };

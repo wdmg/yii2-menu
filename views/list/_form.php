@@ -304,7 +304,7 @@ JS
 </template>
 <?php endif; ?>
 <template id="menuItemTemplate">
-    <li id="menuItem-{{id}}" class="panel panel-default draggable" role="presentation">
+    <li id="menuItem-{{id}}" data-id="{{id}}" class="panel panel-default draggable" role="presentation">
         <div class="panel-heading" role="tab" id="menuItemHeading-{{id}}">
             <h4 class="panel-title">
                 <a role="button"
