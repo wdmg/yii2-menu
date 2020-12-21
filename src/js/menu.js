@@ -420,16 +420,13 @@ var DragMenu = new function() {
             return;
 
         var elem = e.target.closest('.draggable');
-        if (!elem)
-            return;
-
-        dragObject.elem = elem;
-
-        // запомним, что элемент нажат на текущих координатах pageX/pageY
-        dragObject.downX = e.pageX || e.targetTouches[0].pageX;
-        dragObject.downY = e.pageY || e.targetTouches[0].pageY;
-
-        return false;
+        if (elem) {
+            dragObject.elem = elem;
+            // запомним, что элемент нажат на текущих координатах pageX/pageY
+            dragObject.downX = e.pageX || e.targetTouches[0].pageX;
+            dragObject.downY = e.pageY || e.targetTouches[0].pageY;
+        }
+        return;
     }
     var onMouseMove = (e) => {
         if (!dragObject.elem) return; // элемент не зажат
