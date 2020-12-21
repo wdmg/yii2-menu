@@ -5,7 +5,6 @@ var DragMenu = new function() {
     var dragMenu = document.getElementById('dragMenu');
     var menuItems = document.getElementById('menuItems');
     var menuSources = document.getElementById('menuSources');
-    var panels = menuSources.querySelectorAll(".panel");
     var formTemplate = document.getElementById('itemFormTemplate');
     var itemTemplate = document.getElementById('menuItemTemplate');
     var addMenuItemForm = document.getElementById('addMenuItemForm');
@@ -139,13 +138,17 @@ var DragMenu = new function() {
             var sourcesList = [...forms].filter(form => {
                 if (form.children.length) {
 
+                    form.addEventListener('change', function(event) {
+                        return self.onChange(dragObject, menuItems);
+                    });
+
                     let outOfBtn = form.querySelector('.toolbar a[data-rel="out-of"]');
                     outOfBtn.onclick = function (event) {
                         event.preventDefault();
                         let elem = form.closest('.draggable');
-                        let list = form.closest('.menu-items');
-                        if (elem && list) {
-                            list.append(elem);
+                        if (elem) {
+                            elem.classList.remove('sub-item');
+                            menuItems.append(elem);
                         }
                     }
 
@@ -191,7 +194,7 @@ var DragMenu = new function() {
         return self.onAddFailture(dragObject, menuItems);
     };
 
-    if (addMenuItemForm.length) {
+    if (addMenuItemForm) {
         let addButton = addMenuItemForm.querySelector('button[data-rel="add"]');
         addButton.addEventListener("click", (event) => {
 
@@ -218,57 +221,59 @@ var DragMenu = new function() {
         });
     }
 
-    var sourcesList = [...panels].filter(panel => {
-        if (panel.children.length) {
+    if (menuSources) {
+        var panels = menuSources.querySelectorAll(".panel");
+        var sourcesList = [...panels].filter(panel => {
+            if (panel.children.length) {
 
-            let addButton = panel.querySelector('button[data-rel="add"]');
-            let selectAll = panel.querySelector('input[type="checkbox"][name="select-all"]');
-            let items = panel.querySelectorAll('.source-list input[type="checkbox"]');
+                let addButton = panel.querySelector('button[data-rel="add"]');
+                let selectAll = panel.querySelector('input[type="checkbox"][name="select-all"]');
+                let items = panel.querySelectorAll('.source-list input[type="checkbox"]');
 
 
-            if (addButton && items) {
+                if (addButton && items) {
 
-                items.forEach(item => {
-                    item.onchange = (event) => {
+                    items.forEach(item => {
+                        item.onchange = (event) => {
+                            event.preventDefault();
+                            if (panel.querySelectorAll('input[type="checkbox"]:checked:not([name="select-all"])').length)
+                                addButton.removeAttribute('disabled');
+                            else
+                                addButton.setAttribute('disabled', true);
+                        }
+                    });
+
+                    addButton.onclick = (event) => {
                         event.preventDefault();
-                        if (panel.querySelectorAll('input[type="checkbox"]:checked:not([name="select-all"])').length)
-                            addButton.removeAttribute('disabled');
-                        else
-                            addButton.setAttribute('disabled', true);
-                    }
-                });
+                        let sourcesItems = [...items].filter(item => {
+                            if (item.checked) {
+                                addMenuItem(item.dataset);
+                            }
+                        });
 
-                addButton.onclick = (event) => {
-                    event.preventDefault();
-                    let sourcesItems = [...items].filter(item => {
-                        if (item.checked) {
-                            addMenuItem(item.dataset);
-                        }
-                    });
-
-                    items.forEach(checkbox => {
-                        checkbox.checked = false;
-                    });
-                }
-            }
-
-            if (selectAll && items) {
-                selectAll.onchange = (event) => {
-                    event.preventDefault();
-                    let target = event.target.checked;
-                    items.forEach(checkbox => {
-                        if (target) {
-                            checkbox.checked = true;
-                        } else {
+                        items.forEach(checkbox => {
                             checkbox.checked = false;
-                        }
-                        checkbox.onchange(event);
-                    });
+                        });
+                    }
+                }
+
+                if (selectAll && items) {
+                    selectAll.onchange = (event) => {
+                        event.preventDefault();
+                        let target = event.target.checked;
+                        items.forEach(checkbox => {
+                            if (target) {
+                                checkbox.checked = true;
+                            } else {
+                                checkbox.checked = false;
+                            }
+                            checkbox.onchange(event);
+                        });
+                    }
                 }
             }
-        }
-    });
-
+        });
+    }
 
     var createDroppable = (e) => {
         let top = e.clientY || e.targetTouches[0].pageY;
@@ -556,6 +561,7 @@ var DragMenu = new function() {
     this.onDragEnd = function(dragObject, dropElem) {};
     this.onDragCancel = function(dragObject) {};
 
+    this.onChange = function(dragObject, menuItems) {};
     this.onAddSuccess = function(dragObject, menuItems) {};
     this.onAddFailture = function(dragObject, menuItems) {};
 
@@ -585,6 +591,11 @@ DragMenu.onDragEnd = function (dragObject, dropElem) {
         let form = document.getElementById('addMenuForm');
         form.querySelector('input#menu-items').value = dragObject.data;
     }
+};
+
+DragMenu.onChange = function (dragObject, menuItems) {
+    let form = document.getElementById('addMenuForm');
+    form.querySelector('input#menu-items').value = this.getItemsData();
 };
 
 DragMenu.onAddSuccess = function (dragObject, menuItems) {

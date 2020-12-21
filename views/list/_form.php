@@ -62,7 +62,7 @@ use wdmg\widgets\SelectInput;
     <hr/>
     <div class="form-group">
         <?= Html::a(Yii::t('app/modules/menu', '&larr; Back to list'), ['list/index'], ['class' => 'btn btn-default pull-left']) ?>&nbsp;
-        <?= Html::submitButton(Yii::t('app/modules/menu', 'Save'), ['class' => 'btn btn-success pull-right']) ?>
+        <?= Html::submitButton(Yii::t('app/modules/menu', 'Save changes'), ['class' => 'btn btn-save btn-success pull-right']) ?>
     </div>
     <?php ActiveForm::end(); ?>
     </div>
@@ -102,7 +102,7 @@ use wdmg\widgets\SelectInput;
                             ]); ?>
                             <?= $linkForm->field($model->item, 'name')->textInput(); ?>
                             <?= $linkForm->field($model->item, 'title')->textInput(); ?>
-                            <?= $linkForm->field($model->item, 'source_url')->textInput(); ?>
+                            <?= $linkForm->field($model->item, 'source_url')->textInput(['autocomplete' => 'off']); ?>
                             <?= $linkForm->field($model->item, 'only_auth', [
                                 'template' => '{input} - {label}{error}',
                             ])->checkbox(['label' => null])->label(Yii::t('app/modules/menu', 'Only for signed users')) ?>
@@ -264,13 +264,16 @@ JS
         'enableAjaxValidation' => true,
         'options' => [
             'enctype' => 'multipart/form-data',
-            'data-key' => '{{id}}',
-            'data-type' => '{{source_type}}'
+            'data' => [
+                'key' => '{{id}}',
+                'type' => '{{source_type}}',
+                'model' => \yii\helpers\StringHelper::basename(get_class($model->item))
+            ]
         ]
     ]); ?>
     <?= $itemForm->field($model->item, 'name')->textInput(['value' => '{{name}}']); ?>
     <?= $itemForm->field($model->item, 'title')->textInput(['value' => '{{title}}']); ?>
-    <?= $itemForm->field($model->item, 'source_url')->textInput(['value' => '{{source_url}}']); ?>
+    <?= $itemForm->field($model->item, 'source_url')->textInput(['value' => '{{source_url}}', 'autocomplete' => 'off']); ?>
     <?= $itemForm->field($model->item, 'only_auth', [
         'template' => '{input} - {label}{error}',
     ])->checkbox(['value' => '{{only_auth}}', 'label' => null])->label(Yii::t('app/modules/menu', 'Only for signed users')) ?>
@@ -282,21 +285,13 @@ JS
     <?= $itemForm->field($model->item, 'source_type')->hiddenInput(['value' => '{{source_type}}'])->label(false); ?>
     <?= $itemForm->field($model->item, 'source_id')->hiddenInput(['value' => '{{source_id}}'])->label(false); ?>
     <div class="form-group row">
-        <label for="itemSource" class="col-sm-2 col-form-label"><?= Yii::t('app/modules/menu', 'Source of') ?>:</label>
-        <div class="col-sm-10 form-control-plaintext">
+        <label for="itemSource" class="col-xs-4 col-sm-2 col-form-label"><?= Yii::t('app/modules/menu', 'Source of') ?>:</label>
+        <div class="col-xs-8 col-sm-10 form-control-plaintext">
             <a href="{{source_url}}" id="itemSource" target="_blank" data-pjax="0">{{source_url}}</a>
         </div>
     </div>
     <hr/>
     <div class="toolbar" role="toolbar">
-        <div class="form-group" role="group">
-            <span class="visible-md-inline">
-                <?= Html::button(Yii::t('app/modules/menu', 'Save'), ['class' => 'btn btn-primary']) ?>
-            </span>
-            <span class="hidden-md">
-                <?= Html::button(Yii::t('app/modules/menu', 'Save changes'), ['class' => 'btn btn-primary']) ?>
-            </span>
-        </div>
         <div class="form-group" role="group">
             <?= Html::a(
                 '<span class="hidden-md">' . Yii::t('app/modules/menu', 'Out of') . '</span> <i class="fa fa-reply"></i>',

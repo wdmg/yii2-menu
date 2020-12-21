@@ -303,6 +303,8 @@ class Menu extends ActiveRecord
         else
             $items = MenuItems::find()->where(['menu_id' => $this->id]);
 
+        $items->orderBy(['id' => SORT_ASC]);
+
         return ($asJson) ? json_encode($items->asArray()->all()) : $items->all();
     }
 
