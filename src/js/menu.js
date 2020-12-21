@@ -26,10 +26,12 @@ var DragMenu = new function() {
             let itemForm = e.querySelector('form[data-key]');
             let pointer = { // Берём атрибут id элемента
                 id: itemForm.getAttribute('data-key') || null,
-                type: itemForm.getAttribute('data-type') || null,
+                //source_type: itemForm.getAttribute('data-type') || null,
                 name: itemForm.querySelector('input[name="MenuItems[name]"]').value || null,
                 title: itemForm.querySelector('input[name="MenuItems[title]"]').value || null,
-                url: itemForm.querySelector('input[name="MenuItems[url]"]').value || null,
+                source_id: itemForm.querySelector('input[name="MenuItems[source_id]"]').value || null,
+                source_type: itemForm.querySelector('input[name="MenuItems[source_type]"]').value || null,
+                source_url: itemForm.querySelector('input[name="MenuItems[source_url]"]').value || null,
                 only_auth: itemForm.querySelector('input[name="MenuItems[only_auth]"]').value || null,
                 target_blank: itemForm.querySelector('input[name="MenuItems[target_blank]"]').value || null,
             };
@@ -115,21 +117,22 @@ var DragMenu = new function() {
             let data = item;
             data.form = fillTemplate(formTemplate.innerHTML, data);
 
-            let content = fillTemplate(itemTemplate.innerHTML, data);
+            let html = fillTemplate(itemTemplate.innerHTML, data);
+            if (html) {
+                if (parent) {
 
-            if (parent) {
+                    let list = document.createElement('ul');
+                    list.classList.add('menu-items');
+                    list.setAttribute('role', "tablist");
 
-                let list = document.createElement('ul');
-                list.classList.add('menu-items');
-                list.setAttribute('role', "tablist");
+                    let listItem = htmlToElement(html);
+                    listItem.classList.add('sub-item');
+                    list.append(listItem);
 
-                let listItem = htmlToElement(content);
-                listItem.classList.add('sub-item');
-                list.append(listItem);
-
-                menuItems.querySelector('[data-id="' + parent + '"]').append(list);
-            } else {
-                menuItems.append(htmlToElement(content));
+                    menuItems.querySelector('[data-id="' + parent + '"]').append(list);
+                } else {
+                    menuItems.append(htmlToElement(html));
+                }
             }
 
             return self.onAddSuccess(dragObject, menuItems);
@@ -144,7 +147,7 @@ var DragMenu = new function() {
 
             let collapseToggler = menuSources.querySelector('#source-link a[data-toggle="collapse"]');
 
-            console.log(collapseToggler);
+            //console.log(collapseToggler);
 
             let item = {
                 'id': null,
@@ -152,7 +155,9 @@ var DragMenu = new function() {
                 'source_name': collapseToggler.dataset.name || null,
                 'name': addMenuItemForm.querySelector('input[name="MenuItems[name]"]').value || false,
                 'title': addMenuItemForm.querySelector('input[name="MenuItems[title]"]').value || false,
-                'url': addMenuItemForm.querySelector('input[name="MenuItems[url]"]').value || false,
+                'source_id': null,
+                'source_type': addMenuItemForm.querySelector('input[name="MenuItems[source_type]"]').value || false,
+                'source_url': addMenuItemForm.querySelector('input[name="MenuItems[source_url]"]').value || false,
                 'only_auth': addMenuItemForm.querySelector('input[name="MenuItems[only_auth]"]').value || false,
                 'target_blank': addMenuItemForm.querySelector('input[name="MenuItems[target_blank]"]').value || false,
             };
@@ -244,7 +249,7 @@ var DragMenu = new function() {
 
         if (target && typeof target !== "undefined") {
 
-            //console.log('target', target);
+            ////console.log('target', target);
 
             removeElements(menuItems.querySelectorAll(".droppable:not(.delete-area)"));
 
@@ -261,7 +266,7 @@ var DragMenu = new function() {
                 if (target.classList.contains('sub-item'))
                     droppable.classList.add('sub-item');
 
-                //console.log('after');
+                ////console.log('after');
 
             } else if (top < (target.getBoundingClientRect().top + (target.offsetHeight/1.5))) {
 
@@ -278,7 +283,7 @@ var DragMenu = new function() {
                     return false;
                 }
 
-                //console.log('before');
+                ////console.log('before');
 
             }
 
@@ -306,7 +311,7 @@ var DragMenu = new function() {
             avatar.style.left = old.left;
             avatar.style.top = old.top;
             avatar.style.zIndex = old.zIndex;
-            //console.log('Drag cancel, rollback');
+            ////console.log('Drag cancel, rollback');
             /*setTimeout(function() {
                 document.querySelector('.droppable.delete-area').classList.remove('show');
             }, 500);*/
@@ -315,7 +320,7 @@ var DragMenu = new function() {
         return avatar;
     }
     var startDrag = (e) => {
-        //console.log('startDrag');
+        ////console.log('startDrag');
 
         let avatar = dragObject.avatar;
         avatar.style.width = dragObject.avatar.offsetWidth + 'px';
@@ -331,7 +336,7 @@ var DragMenu = new function() {
 
     }
     var finishDrag = (e) => {
-        //console.log('finishDrag');
+        ////console.log('finishDrag');
 
         let avatar = dragObject.avatar;
         let dropElem = findDroppable(e);
@@ -415,7 +420,8 @@ var DragMenu = new function() {
             return;
 
         var elem = e.target.closest('.draggable');
-        if (!elem) return;
+        if (!elem)
+            return;
 
         dragObject.elem = elem;
 
@@ -488,8 +494,12 @@ var DragMenu = new function() {
     this.buildMenuItems = function(data) {
         let items = [...data].filter(item => {
             if (typeof item == "object") {
-                console.log(item);
+                //console.log(item);
                 let parent_id = item.parent_id
+
+                if (item.source_type && !item.source_name)
+                    item.source_name = menuSources.querySelector('.panel .panel-heading a[data-id="'+item.source_type+'"]').dataset.name;
+
                 addMenuItem(item, parent_id);
             }
         });
@@ -504,7 +514,7 @@ var DragMenu = new function() {
 
     document.addEventListener("DOMContentLoaded", function(event) {
         if (dragMenu && menuItems) {
-            console.log('dragMenu.onload');
+            //console.log('dragMenu.onload');
             dragMenu.onmousedown = onMouseDown;
             dragMenu.ontouchstart = onMouseDown;
             dragMenu.onmousemove = onMouseMove;
@@ -538,5 +548,6 @@ DragMenu.onAddSuccess = function (dragObject, menuItems) {
 DragMenu.onInit = function () {
     let form = document.getElementById('addMenuForm');
     let data = JSON.parse(form.querySelector('input#menu-items').value);
+    //console.log(data);
     this.buildMenuItems(data);
 };

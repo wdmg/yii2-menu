@@ -167,6 +167,8 @@ class Menu extends ActiveRecord
             $this->items = \yii\helpers\Json::decode($this->items);
             $menuItems = \wdmg\helpers\ArrayHelper::flattenTree($this->items, 'children', 'parent_id');
 
+            MenuItems::deleteAll(['menu_id' => $this->id]);
+
             $errors = [];
             $allParents = [];
             foreach($menuItems as $key => $item) {
@@ -180,6 +182,7 @@ class Menu extends ActiveRecord
                 $model->menu_id = $this->id;
 
                 if (isset($item['parent_id'])) {
+
                     $parent_id = $item['parent_id'];
                     if (isset($allParents[$parent_id]))
                         $model->parent_id = $allParents[$parent_id];
@@ -193,16 +196,21 @@ class Menu extends ActiveRecord
                 if (isset($item['title']))
                     $model->title = $item['title'];
 
-                if (isset($item['url']))
-                    $model->source_url = $item['url'];
+                if (isset($item['source_url']))
+                    $model->source_url = $item['source_url'];
 
+                if (isset($item['source_type']))
+                    $model->source_type = $item['source_type'];
 
-                if (isset($item['type'])) {
-                    if ($type = array_search($item['type'], $sourceTypes))
-                        $model->source_type = array_search($item['type'], $sourceTypes);
+                if (isset($item['source_id']))
+                    $model->source_id = $item['source_id'];
+
+                /*if (isset($item['source_type'])) {
+                    if ($type = array_search($item['source_type'], $sourceTypes))
+                        $model->source_type = array_search($item['source_type'], $sourceTypes);
                     else
                         $model->source_type = 0; // Default type for unrecornized menu items
-                }
+                }*/
 
                 if (isset($item['source_id']))
                     $model->source_id = intval($item['source_id']);
@@ -215,14 +223,12 @@ class Menu extends ActiveRecord
 
                 if ($model->validate()) {
                     if ($model->save()) {
-                        $parents[$key] = $model->id;
+                        $allParents[$key] = $model->id;
                     }
                 } else {
                     $errors[] = $model->errors;
                 }
             }
-
-            //var_export($errors);
         }
 
         return parent::beforeSave($insert);
@@ -304,6 +310,8 @@ class Menu extends ActiveRecord
     {
         $list = [];
         if (is_array($models = $this->module->supportModels)) {
+
+            $sourceTypes = MenuItems::getTypesList(false, true);
             foreach ($models as $name => $class) {
                 $model = new $class();
 
@@ -319,11 +327,10 @@ class Menu extends ActiveRecord
                     }
                 };
 
-                //$instance = $model->getModule(true);
                 $instance = $this->module->moduleLoaded($model->moduleId, true);
-
                 $list[] = [
-                    'id' => $model->moduleId,
+                    'id' => array_search($model->moduleId, $sourceTypes),
+                    'type' => $model->moduleId,
                     'name' => $instance->name,
                     'route' => $model->baseRoute,
                     'items' => $items,

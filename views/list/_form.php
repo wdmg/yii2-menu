@@ -78,6 +78,7 @@ use wdmg\widgets\SelectInput;
                             <a href="#collapse-link"
                                data-toggle="collapse"
                                data-parent="#menuSources"
+                               data-id="<?= $model->item::TYPE_LINK; ?>"
                                data-type="link"
                                data-name="<?= Yii::t('app/modules/menu', 'Custom link') ?>"
                                aria-expanded="true"
@@ -101,14 +102,14 @@ use wdmg\widgets\SelectInput;
                             ]); ?>
                             <?= $linkForm->field($model->item, 'name')->textInput(); ?>
                             <?= $linkForm->field($model->item, 'title')->textInput(); ?>
-                            <?= $linkForm->field($model->item, 'url')->textInput(); ?>
+                            <?= $linkForm->field($model->item, 'source_url')->textInput(); ?>
                             <?= $linkForm->field($model->item, 'only_auth', [
                                 'template' => '{input} - {label}{error}',
                             ])->checkbox(['label' => null])->label(Yii::t('app/modules/menu', 'Only for signed users')) ?>
                             <?= $linkForm->field($model->item, 'target_blank', [
                                 'template' => '{input} - {label}{error}',
                             ])->checkbox(['label' => null])->label(Yii::t('app/modules/menu', 'Open as target _blank')) ?>
-                            <?= $linkForm->field($model->item, 'type')->hiddenInput(['value' => $model->item::TYPE_LINK])->label(false); ?>
+                            <?= $linkForm->field($model->item, 'source_type')->hiddenInput(['value' => $model->item::TYPE_LINK])->label(false); ?>
                             <hr/>
                             <div class="form-group">
                                 <button class="btn btn-primary btn-sm" type="button" data-rel="add" disabled="true"><?= Yii::t('app/modules/menu', 'Add to menu'); ?></button>
@@ -119,15 +120,17 @@ use wdmg\widgets\SelectInput;
                 </div>
             <?php endif; ?>
             <?php
+                $num = 1;
                 if ($sources = $model->getSourcesList(false)) {
                     foreach ($sources as $source) { ?>
-                        <div id="source-<?= $source['id']; ?>" class="panel panel-default">
-                            <div id="heading-<?= $source['id']; ?>" class="panel-heading" role="tab">
+                        <div id="source-<?= $source['type']; ?>" class="panel panel-default">
+                            <div id="heading-<?= $source['type']; ?>" class="panel-heading" role="tab">
                                 <h4 class="panel-title">
-                                    <a href="#collapse-<?= $source['id']; ?>"
+                                    <a href="#collapse-<?= $source['type']; ?>"
                                        data-toggle="collapse"
                                        data-parent="#menuSources"
-                                       data-type="<?= $source['id']; ?>"
+                                       data-id="<?= $source['id']; ?>"
+                                       data-type="<?= $source['type']; ?>"
                                        data-name="<?= $source['name']; ?>"
                                        aria-expanded="false"
                                        aria-controls="collapseOne"
@@ -136,23 +139,25 @@ use wdmg\widgets\SelectInput;
                                     </a>
                                 </h4>
                             </div>
-                            <div id="collapse-<?= $source['id']; ?>" class="panel-collapse collapse" role="tabpanel"
-                                 aria-labelledby="heading-<?= $source['id']; ?>">
+                            <div id="collapse-<?= $source['type']; ?>" class="panel-collapse collapse" role="tabpanel"
+                                 aria-labelledby="heading-<?= $source['type']; ?>">
                                 <div class="panel-body">
                                     <ul class="list-unstyled source-list">
                                         <?php foreach ($source['items'] as $item) { ?>
                                             <div class="checkbox">
-                                                <label for="checkbox-<?= $source['id']; ?>-<?= $item['id']; ?>">
-                                                    <?= Html::input('checkbox', $source['id'] . '-' . $item['id'], $item['id'], [
-                                                        'id' => "checkbox-" . $source['id'] . "-" . $item['id'],
+                                                <label for="checkbox-<?= $source['type']; ?>-<?= $item['id']; ?>">
+                                                    <?= Html::input('checkbox', $source['type'] . '-' . $item['id'], $item['id'], [
+                                                        'id' => "checkbox-" . $source['type'] . "-" . $item['id'],
                                                         'title' => $item['title'],
                                                         'data' => [
-                                                            'id' => $item['id'],
-                                                            'source' => $source['id'],
+                                                            'id' => 'new-'.$num,
+                                                            'source' => $source['type'],
                                                             'source_name' => $source['name'],
                                                             'name' => $item['name'],
                                                             'title' => $item['title'],
-                                                            'url' => $item['url'],
+                                                            'source_id' => $item['id'],
+                                                            'source_type' => $source['id'],
+                                                            'source_url' => $item['url'],
                                                         ],
                                                     ]); ?>
                                                     <?= $item['name'] . '&nbsp;<span class="pull-right">' . Html::a('Open link', $item['url'], [
@@ -164,14 +169,17 @@ use wdmg\widgets\SelectInput;
                                                     ]) . '</span>'; ?>
                                                 </label>
                                             </div>
-                                        <?php } ?>
+                                        <?php
+                                                $num++;
+                                            }
+                                        ?>
                                     </ul>
                                     <hr/>
                                     <div class="form-group">
                                         <div class="checkbox pull-right">
-                                            <label for="selectall-<?= $source['id']; ?>">
+                                            <label for="selectall-<?= $source['type']; ?>">
                                                 <?= Html::input('checkbox', 'select-all', 'true', [
-                                                    'id' => 'selectall-'.$source['id']
+                                                    'id' => 'selectall-'.$source['type']
                                                 ]); ?>
                                                 <?= Yii::t('app/modules/menu', '- Select all'); ?>
                                             </label>
@@ -243,12 +251,12 @@ JS
         'options' => [
             'enctype' => 'multipart/form-data',
             'data-key' => '{{id}}',
-            'data-type' => '{{source}}'
+            'data-type' => '{{source_type}}'
         ]
     ]); ?>
     <?= $itemForm->field($model->item, 'name')->textInput(['value' => '{{name}}']); ?>
     <?= $itemForm->field($model->item, 'title')->textInput(['value' => '{{title}}']); ?>
-    <?= $itemForm->field($model->item, 'url')->textInput(['value' => '{{url}}']); ?>
+    <?= $itemForm->field($model->item, 'source_url')->textInput(['value' => '{{source_url}}']); ?>
     <?= $itemForm->field($model->item, 'only_auth', [
         'template' => '{input} - {label}{error}',
     ])->checkbox(['value' => '{{only_auth}}', 'label' => null])->label(Yii::t('app/modules/menu', 'Only for signed users')) ?>
@@ -257,12 +265,12 @@ JS
     ])->checkbox(['value' => '{{target_blank}}', 'label' => null])->label(Yii::t('app/modules/menu', 'Open as target _blank')) ?>
     <?= $itemForm->field($model->item, 'parent_id')->hiddenInput(['value' => '{{parent_id}}'])->label(false); ?>
     <?= $itemForm->field($model->item, 'menu_id')->hiddenInput(['value' => $model->id])->label(false); ?>
-    <?= $itemForm->field($model->item, 'type')->hiddenInput(['value' => '{{source}}'])->label(false); ?>
-    <?= $itemForm->field($model->item, 'source_id')->hiddenInput(['value' => '{{id}}'])->label(false); ?>
+    <?= $itemForm->field($model->item, 'source_type')->hiddenInput(['value' => '{{source_type}}'])->label(false); ?>
+    <?= $itemForm->field($model->item, 'source_id')->hiddenInput(['value' => '{{source_id}}'])->label(false); ?>
     <div class="form-group row">
         <label for="itemSource" class="col-sm-2 col-form-label"><?= Yii::t('app/modules/menu', 'Source of') ?>:</label>
         <div class="col-sm-10 form-control-plaintext">
-            <a href="{{url}}" id="itemSource" target="_blank" data-pjax="0">{{url}}</a>
+            <a href="{{source_url}}" id="itemSource" target="_blank" data-pjax="0">{{source_url}}</a>
         </div>
     </div>
     <hr/>

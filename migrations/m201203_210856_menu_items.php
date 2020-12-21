@@ -27,8 +27,8 @@ class m201203_210856_menu_items extends Migration
             'name' => $this->string(128)->notNull(),
             'title' => $this->string(255)->null(),
 
-            'source_type' => $this->tinyInteger(1)->notNull()->defaultValue(1),
             'source_id' => $this->integer(11)->null(),
+            'source_type' => $this->tinyInteger(1)->notNull()->defaultValue(1),
             'source_url' => $this->string(255)->notNull(),
 
             'only_auth' => $this->tinyInteger(1)->null(),
@@ -62,7 +62,7 @@ class m201203_210856_menu_items extends Migration
             'parent_id',
             '{{%menu_items}}',
             'id',
-            'NO ACTION',
+            'CASCADE',
             'CASCADE'
         );
 

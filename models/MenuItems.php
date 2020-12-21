@@ -120,7 +120,7 @@ class MenuItems extends ActiveRecord
     /**
      * @return array
      */
-    public function getTypesList($allStatuses = false, $assocName = false)
+    public static function getTypesList($allStatuses = false, $assocName = false)
     {
         $list = [];
         if ($allStatuses) {
