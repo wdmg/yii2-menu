@@ -135,6 +135,56 @@ var DragMenu = new function() {
                 }
             }
 
+            let forms = menuItems.querySelectorAll('.panel form');
+            var sourcesList = [...forms].filter(form => {
+                if (form.children.length) {
+
+                    let outOfBtn = form.querySelector('.toolbar a[data-rel="out-of"]');
+                    outOfBtn.onclick = function (event) {
+                        event.preventDefault();
+                        let elem = form.closest('.draggable');
+                        let list = form.closest('.menu-items');
+                        if (elem && list) {
+                            list.append(elem);
+                        }
+                    }
+
+                    let upOneBtn = form.querySelector('.toolbar a[data-rel="up-one"]');
+                    upOneBtn.onclick = function (event) {
+                        event.preventDefault();
+                        let elem = form.closest('.draggable');
+                        if (elem) {
+                            let prev = elem.previousSibling;
+                            if (prev) {
+                                elem.parentNode.insertBefore(elem, prev);
+                            }
+                        }
+                    }
+
+                    let downOneBtn = form.querySelector('.toolbar a[data-rel="down-one"]');
+                    downOneBtn.onclick = function (event) {
+                        event.preventDefault();
+                        let elem = form.closest('.draggable');
+                        if (elem) {
+                            let next = elem.nextSibling;
+                            if (next) {
+                                elem.parentNode.insertBefore(elem, next.nextSibling);
+                            }
+                        }
+                    }
+
+                    let removeBtn = form.querySelector('.toolbar a[data-rel="remove"]');
+                    removeBtn.onclick = function (event) {
+                        event.preventDefault();
+                        let elem = form.closest('.draggable');
+                        if (elem) {
+                            elem.remove();
+                        }
+                    }
+
+                }
+            });
+
             return self.onAddSuccess(dragObject, menuItems);
 
         }

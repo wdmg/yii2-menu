@@ -112,7 +112,14 @@ use wdmg\widgets\SelectInput;
                             <?= $linkForm->field($model->item, 'source_type')->hiddenInput(['value' => $model->item::TYPE_LINK])->label(false); ?>
                             <hr/>
                             <div class="form-group">
-                                <button class="btn btn-primary btn-sm" type="button" data-rel="add" disabled="true"><?= Yii::t('app/modules/menu', 'Add to menu'); ?></button>
+                                <button class="btn btn-primary btn-sm" type="button" data-rel="add" disabled="true">
+                                    <span class="visible-md-inline">
+                                        <?= Yii::t('app/modules/menu', 'Add'); ?>
+                                    </span>
+                                    <span class="hidden-md">
+                                        <?= Yii::t('app/modules/menu', 'Add to menu'); ?>
+                                    </span>
+                                </button>
                             </div>
                             <?php ActiveForm::end(); ?>
                         </div>
@@ -184,7 +191,14 @@ use wdmg\widgets\SelectInput;
                                                 <?= Yii::t('app/modules/menu', '- Select all'); ?>
                                             </label>
                                         </div>
-                                        <button class="btn btn-primary btn-sm" type="button" data-rel="add" disabled="true"><?= Yii::t('app/modules/menu', 'Add to menu'); ?></button>
+                                        <button class="btn btn-primary btn-sm" type="button" data-rel="add" disabled="true">
+                                            <span class="visible-md-inline">
+                                                <?= Yii::t('app/modules/menu', 'Add'); ?>
+                                            </span>
+                                            <span class="hidden-md">
+                                                <?= Yii::t('app/modules/menu', 'Add to menu'); ?>
+                                            </span>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -276,30 +290,35 @@ JS
     <hr/>
     <div class="toolbar" role="toolbar">
         <div class="form-group" role="group">
-            <?= Html::button(Yii::t('app/modules/menu', 'Save changes'), ['class' => 'btn btn-primary']) ?>
+            <span class="visible-md-inline">
+                <?= Html::button(Yii::t('app/modules/menu', 'Save'), ['class' => 'btn btn-primary']) ?>
+            </span>
+            <span class="hidden-md">
+                <?= Html::button(Yii::t('app/modules/menu', 'Save changes'), ['class' => 'btn btn-primary']) ?>
+            </span>
         </div>
         <div class="form-group" role="group">
             <?= Html::a(
-                Yii::t('app/modules/menu', 'Out of') . ' <i class="fa fa-reply"></i>',
+                '<span class="hidden-md">' . Yii::t('app/modules/menu', 'Out of') . '</span> <i class="fa fa-reply"></i>',
                 '#',
-                ['class' => 'btn btn-link', 'role' => 'button']
+                ['class' => 'btn btn-link', 'role' => 'button', 'data-rel' => "out-of"]
             ); ?>
             <?= Html::a(
-                Yii::t('app/modules/menu', 'Up one') . ' <i class="fa fa-arrow-up"></i>',
+                '<span class="hidden-md">' . Yii::t('app/modules/menu', 'Up one') . '</span> <i class="fa fa-arrow-up"></i>',
                 '#',
-                ['class' => 'btn btn-link', 'role' => 'button']
+                ['class' => 'btn btn-link', 'role' => 'button', 'data-rel' => "up-one"]
             ); ?>
             <?= Html::a(
-                Yii::t('app/modules/menu', 'Down one') . ' <i class="fa fa-arrow-down"></i>',
+                '<span class="hidden-md">' . Yii::t('app/modules/menu', 'Down one') . '</span> <i class="fa fa-arrow-down"></i>',
                 '#',
-                ['class' => 'btn btn-link', 'role' => 'button']
+                ['class' => 'btn btn-link', 'role' => 'button', 'data-rel' => "down-one"]
             ); ?>
         </div>
         <div class="form-group" role="group">
             <?= Html::a(
                 Yii::t('app/modules/menu', 'Remove') . ' <i class="fa fa-trash"></i>',
                 '#',
-                ['class' => 'btn btn-link text-danger', 'role' => 'button']
+                ['class' => 'btn btn-link text-danger', 'role' => 'button', 'data-rel' => "remove"]
             ); ?>
             <?= Html::a(
                 Yii::t('app/modules/menu', 'Close') . ' <i class="fa fa-times"></i>',

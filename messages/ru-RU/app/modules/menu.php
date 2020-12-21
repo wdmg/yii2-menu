@@ -50,11 +50,13 @@ return [
     '{count} items' => "{count} пункт(ов)",
     'No items found' => "Пункты не найдены",
 
+    'Add' => "Добавить",
     'Add to menu' => "Добавить в меню",
     '- Select all' => "- Выделить все",
     'Out of' => "Вынести",
     'Up one' => "Вверх",
     'Down one' => "Вниз",
+    'Save' => "Сохранить",
     'Save changes' => "Сохранить изменения",
     'Remove' => "Удалить",
     'Close' => "Закрыть",
@@ -65,7 +67,6 @@ return [
     'Create menu' => "Создание меню",
     'Updating menu: {name}' => "Редактирование меню: {name}",
     '&larr; Back to list' => "&larr; Назад к списку",
-    'Save' => "Сохранить",
 
     'Add menu items from the right column.' => "Добавьте элементы меню из столбца справа.",
 
