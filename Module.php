@@ -113,7 +113,7 @@ class Module extends BaseModule
 
         // Configure module component
         $app->setComponents([
-            'forms' => [
+            'menu' => [
                 'class' => 'wdmg\menu\components\Menu'
             ]
         ]);
