@@ -59,11 +59,25 @@ To build the ActiveForm with fields you may use the component method Yii::$app->
         ...
     ?>
         
-    <?= Nav::widget([
-        'options' => ['class' => 'navbar-nav'],
-        'items' => \Yii::$app->menu->getItems(1, true),
-        ...
-    ]); ?>
+    <?php
+        if ($menuItems = Yii::$app->menu->getItems(1, true)) {
+            echo Nav::widget([
+                'options' => ['class' => 'navbar-nav'],
+                'items' => $menuItems,
+            ]);
+        }
+    ?>
+    
+    // or get items by menu alias
+        
+    <?php
+        if ($menuItems = Yii::$app->menu->getItems('glavnoye-menyu', true)) {
+            echo Nav::widget([
+                'options' => ['class' => 'navbar-nav'],
+                'items' => $menuItems,
+            ]);
+        }
+    ?>
     ...
     
 

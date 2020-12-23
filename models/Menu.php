@@ -298,8 +298,10 @@ class Menu extends ActiveRecord
 
     public function getItems($menu_id = null, $published = false, $asJson = false)
     {
-        if ($menu_id)
+        if (is_int($menu_id))
             $items = MenuItems::find()->where(['menu_id' => $menu_id]);
+        else if (is_string($menu_id))
+            $items = MenuItems::find()->where(['alias' => $menu_id]);
         else
             $items = MenuItems::find()->where(['menu_id' => $this->id]);
 
