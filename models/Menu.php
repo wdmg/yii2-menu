@@ -150,7 +150,7 @@ class Menu extends ActiveRecord
      */
     public function afterFind()
     {
-        $this->items = self::getItems($this->id, true);
+        $this->items = self::getItems($this->id, false, true);
         parent::afterFind();
     }
 
@@ -296,12 +296,15 @@ class Menu extends ActiveRecord
         return null;
     }
 
-    public function getItems($menu_id = null, $asJson = false)
+    public function getItems($menu_id = null, $published = false, $asJson = false)
     {
         if ($menu_id)
             $items = MenuItems::find()->where(['menu_id' => $menu_id]);
         else
             $items = MenuItems::find()->where(['menu_id' => $this->id]);
+
+        if ($published)
+            $items->joinWith('menu')->andWhere(['status' => self::STATUS_PUBLISHED]);
 
         $items->orderBy(['id' => SORT_ASC]);
 

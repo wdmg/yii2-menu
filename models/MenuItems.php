@@ -141,6 +141,11 @@ class MenuItems extends ActiveRecord
         return $list;
     }
 
+    public function getMenu()
+    {
+        return $this->hasOne(\wdmg\menu\models\Menu::class, ['id' => 'menu_id']);
+    }
+
     /**
      * Finds the model based on its primary key value.
      * If the model is not found, null will be returned.

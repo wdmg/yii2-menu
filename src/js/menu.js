@@ -1,6 +1,7 @@
 var DragMenu = new function() {
 
     var self = this;
+    var tolerance = 5;
     var dragObject = {};
     var dragMenu = document.getElementById('dragMenu');
     var menuItems = document.getElementById('menuItems');
@@ -15,15 +16,15 @@ var DragMenu = new function() {
         let tree = [];
 
         /**
-         * Наполнение дерева значениями
+         * Filling the tree with values
          *
          * @param {HTMLLIElement} e   LI-элемент с data-id
-         * @param {Array}         ref Ссылка на дерево, куда добавлять свойства
+         * @param {Array}         ref Link to the tree where to add properties
          */
         function push(e, ref, node = 'UL') {
 
             let itemForm = e.querySelector('form[data-key]');
-            let pointer = { // Берём атрибут id элемента
+            let pointer = { // Take the id attribute of the element
                 id: itemForm.getAttribute('data-key') || null,
                 //source_type: itemForm.getAttribute('data-type') || null,
                 name: itemForm.querySelector('input[name="MenuItems[name]"]').value || null,
@@ -35,12 +36,12 @@ var DragMenu = new function() {
                 target_blank: itemForm.querySelector('input[name="MenuItems[target_blank]"]').value || null,
             };
 
-            if (e.childElementCount) { // Если есть потомки
-                pointer.children = []; // Создаём свойство для них
-                Array.from(e.children).forEach(i => { // Перебираем... хм... детей (по косточкам!)
-                    if (i.nodeName === node.toUpperCase()) { // Если есть ещё один контейнер UL, перебираем его
+            if (e.childElementCount) { // If there are descendants
+                pointer.children = []; // Create a property for them
+                Array.from(e.children).forEach(i => { // We sort out children (bone by bone!)
+                    if (i.nodeName === node.toUpperCase()) { // If there is another UL container, iterate over it
                         Array.from(i.children).forEach(e => {
-                            push(e, pointer.children); // Вызываем push на новых li, но ссылка на древо теперь - это массив children указателя
+                            push(e, pointer.children); // We call push on new li, but the tree reference is now the children array of the pointer
                         });
                     }
                 });
@@ -49,7 +50,7 @@ var DragMenu = new function() {
             ref.push(pointer);
         }
 
-        // Проходимся по всем li переданного ul
+        // Loop through all the li of the passed ul
         Array.from(list.children).forEach(e => {
             push(e, tree, 'UL');
         });
@@ -199,9 +200,6 @@ var DragMenu = new function() {
         addButton.addEventListener("click", (event) => {
 
             let collapseToggler = menuSources.querySelector('#source-link a[data-toggle="collapse"]');
-
-            //console.log(collapseToggler);
-
             let item = {
                 'id': null,
                 'source': collapseToggler.dataset.type || null,
@@ -304,8 +302,6 @@ var DragMenu = new function() {
 
         if (target && typeof target !== "undefined") {
 
-            ////console.log('target', target);
-
             removeElements(menuItems.querySelectorAll(".droppable:not(.delete-area)"));
 
             let top = e.clientY || e.targetTouches[0].pageY;
@@ -320,8 +316,6 @@ var DragMenu = new function() {
 
                 if (target.classList.contains('sub-item'))
                     droppable.classList.add('sub-item');
-
-                ////console.log('after');
 
             } else if (top < (target.getBoundingClientRect().top + (target.offsetHeight/1.5))) {
 
@@ -338,8 +332,6 @@ var DragMenu = new function() {
                     return false;
                 }
 
-                ////console.log('before');
-
             }
 
             dragObject.avatar.style.width = droppable.offsetWidth + 'px';
@@ -348,7 +340,7 @@ var DragMenu = new function() {
     }
     var createAvatar = (e) => {
 
-        // запомнить старые свойства, чтобы вернуться к ним при отмене переноса
+        // Remember old properties to return to them when canceling the transfer
         var avatar = dragObject.elem;
         var old = {
             parent: avatar.parentNode,
@@ -359,29 +351,24 @@ var DragMenu = new function() {
             zIndex: avatar.zIndex || ''
         };
 
-        // функция для отмены переноса
+        // Function to cancel transfer
         avatar.rollback = () => {
             old.parent.insertBefore(avatar, old.nextSibling);
             avatar.style.position = old.position;
             avatar.style.left = old.left;
             avatar.style.top = old.top;
             avatar.style.zIndex = old.zIndex;
-            ////console.log('Drag cancel, rollback');
-            /*setTimeout(function() {
-                document.querySelector('.droppable.delete-area').classList.remove('show');
-            }, 500);*/
         };
 
         return avatar;
     }
     var startDrag = (e) => {
-        ////console.log('startDrag');
 
         let avatar = dragObject.avatar;
         avatar.style.width = dragObject.avatar.offsetWidth + 'px';
         avatar.style.height = dragObject.avatar.offsetHeight + 'px';
 
-        // инициировать начало переноса
+        // Initiate start dragging
         avatar.classList.add('drag-in');
         document.body.appendChild(avatar);
 
@@ -391,7 +378,6 @@ var DragMenu = new function() {
 
     }
     var finishDrag = (e) => {
-        ////console.log('finishDrag');
 
         let avatar = dragObject.avatar;
         let dropElem = findDroppable(e);
@@ -424,9 +410,9 @@ var DragMenu = new function() {
             droppable.replaceWith(avatar);
         }
 
-        // selects all <ul> elements, then filters the collection
+        // Selects all <ul> elements, then filters the collection
         let lists = menuItems.querySelectorAll('ul');
-        // keep only those elements with no child-elements
+        // Keep only those elements with no child-elements
         let emptyList = [...lists].filter(elem => {
             return elem.children.length === 0;
         });
@@ -434,7 +420,6 @@ var DragMenu = new function() {
         for (let empty of emptyList)
             empty.remove();
 
-        //dragObject.data = transformData(menuItems.querySelector(".menu-items"));
         dragObject.data = transformData(menuItems);
         removeElements(menuItems.querySelectorAll(".droppable:not(.delete-area)"));
 
@@ -450,19 +435,19 @@ var DragMenu = new function() {
             self.onDragEnd(dragObject, dropElem);
     }
     var findDroppable = (e) => {
-        // спрячем переносимый элемент
+        // Hide the transferred element
         dragObject.avatar.hidden = true;
 
         let top = e.clientY || e.changedTouches[0].pageY;
         let left = e.clientX || e.changedTouches[0].pageX;
 
-        // получить самый вложенный элемент под курсором мыши
+        // Get the most nested element under the mouse cursor
         let elem = document.elementFromPoint(left, top);
 
-        // показать переносимый элемент обратно
+        // Show the transferred item back
         dragObject.avatar.hidden = false;
 
-        if (elem == null) // такое возможно, если курсор мыши "вылетел" за границу окна
+        if (elem == null) // Possible if the mouse cursor "fly" outside the window border
             return null;
 
         return elem.closest('.droppable');
@@ -477,16 +462,16 @@ var DragMenu = new function() {
         var elem = e.target.closest('.draggable');
         if (elem) {
             dragObject.elem = elem;
-            // запомним, что элемент нажат на текущих координатах pageX/pageY
+            // Remember that the element is clicked at the current coordinates pageX / pageY
             dragObject.downX = e.pageX || e.targetTouches[0].pageX;
             dragObject.downY = e.pageY || e.targetTouches[0].pageY;
         }
         return;
     }
     var onMouseMove = (e) => {
-        if (!dragObject.elem) return; // элемент не зажат
+        if (!dragObject.elem) return; // Element is not move
 
-        if (!dragObject.avatar) { // если перенос не начат...
+        if (!dragObject.avatar) { // If transfer has not started ...
 
             let moveX = 0;
             let moveY = 0;
@@ -498,27 +483,26 @@ var DragMenu = new function() {
                 moveY = e.pageY - dragObject.downY;
             }
 
-            // если мышь передвинулась в нажатом состоянии недостаточно далеко
-            if (Math.abs(moveX) < 5 && Math.abs(moveY) < 5)
+            // If the mouse has not moved far enough when pressed
+            if (Math.abs(moveX) < tolerance && Math.abs(moveY) < tolerance)
                 return;
 
-            // начинаем перенос
-            dragObject.avatar = createAvatar(e); // создать аватар
-            if (!dragObject.avatar) { // отмена переноса, нельзя "захватить" за эту часть элемента
+            // Starting drag and create avatar
+            dragObject.avatar = createAvatar(e);
+            if (!dragObject.avatar) { // Cancellation of dragging, it is impossible to "capture" this part of the element
                 dragObject = {};
                 return;
             }
 
-            // аватар создан успешно
-            // создать вспомогательные свойства shiftX/shiftY
+            // Avatar created, create helper properties shiftX / shiftY
             let coords = getCoords(dragObject.avatar);
             dragObject.shiftX = dragObject.downX - coords.left;
             dragObject.shiftY = dragObject.downY - coords.top;
 
-            startDrag(e); // отобразить начало переноса
+            startDrag(e); // Show start of drag
         }
 
-        // отобразить перенос объекта при каждом движении мыши
+        // Display moving object on every mouse movement
         if (e.type === "touchmove") {
             dragObject.avatar.style.left = (e.changedTouches[0].pageX - dragObject.shiftX) + 'px';
             dragObject.avatar.style.top = (e.changedTouches[0].pageY - dragObject.shiftY) + 'px';
@@ -531,11 +515,10 @@ var DragMenu = new function() {
         return false;
     }
     var onMouseUp = (e) => {
-        if (dragObject.avatar) // если перенос идет
+        if (dragObject.avatar) // If the drag is in progress
             finishDrag(e);
 
-        // перенос либо не начинался, либо завершился
-        // в любом случае очистим "состояние переноса" dragObject
+        // Drag either did not start or ended. In any case, clear the "transfer state" of the dragObject
         dragObject = {};
     }
 
@@ -546,9 +529,8 @@ var DragMenu = new function() {
     this.buildMenuItems = function(data) {
         let items = [...data].filter(item => {
             if (typeof item == "object") {
-                //console.log(item);
-                let parent_id = item.parent_id
 
+                let parent_id = item.parent_id
                 if (item.source_type && !item.source_name)
                     item.source_name = menuSources.querySelector('.panel .panel-heading a[data-id="'+item.source_type+'"]').dataset.name;
 
@@ -567,7 +549,6 @@ var DragMenu = new function() {
 
     document.addEventListener("DOMContentLoaded", function(event) {
         if (dragMenu && menuItems) {
-            //console.log('dragMenu.onload');
             dragMenu.onmousedown = onMouseDown;
             dragMenu.ontouchstart = onMouseDown;
             dragMenu.onmousemove = onMouseMove;
@@ -606,6 +587,5 @@ DragMenu.onAddSuccess = function (dragObject, menuItems) {
 DragMenu.onInit = function () {
     let form = document.getElementById('addMenuForm');
     let data = JSON.parse(form.querySelector('input#menu-items').value);
-    //console.log(data);
     this.buildMenuItems(data);
 };

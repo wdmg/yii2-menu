@@ -1,6 +1,9 @@
 Changelog
 =========
 
+## 1.0.0 (2020-12-23)
+ * Component for output menu items
+ 
 ## 0.0.1 (2020-12-21)
  * Complete JS for menu items CRUD
  * CRUD for MenuItems models

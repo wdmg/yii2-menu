@@ -7,7 +7,7 @@ namespace wdmg\menu\components;
  * Yii2 Menu
  *
  * @category        Component
- * @version         0.0.1
+ * @version         1.0.0
  * @author          Alexsander Vyshnyvetskyy <alex.vyshnyvetskyy@gmail.com>
  * @link            https://github.com/wdmg/yii2-menu
  * @copyright       Copyright (c) 2019 - 2020 W.D.M.Group, Ukraine
@@ -34,65 +34,82 @@ class Menu extends Component
         parent::init();
         $this->model = new \wdmg\menu\models\Menu;
     }
-/*
-    private function buildMenuTree($items, $data = null) {
 
-        if (!$data)
-            $data = [];
+    private function buildTree(&$items = [], $parentId = 0) {
+        $tree = [];
+        foreach ($items as $item) {
 
-        if (is_countable($items)) {
-            foreach ($items as $item) {
+            if (!isset($item['name']))
+                continue;
 
-                if (isset($item['only_auth'])) {
-                    if ($item['only_auth'] && Yii::$app->user->isGuest)
-                        continue;
-                }
-
-                if (isset($item['parent_id'])) {
-                    $parent_id= $item['parent_id'];
-                    if (isset($data[$parent_id])) {
-                        $data[$parent_id]['items'][] = [
-                            'label' => $item['name'],
-                            'url' => ($item['source_url']) ? $item['source_url'] : '#',
-                            'linkOptions' => [
-                                'title' => ($item['title']) ? Html::encode($item['title']) : null,
-                                'target' => ($item['target_blank']) ? "blank" : null
-                            ],
-                        ];
-                    }
-                } else {
-                    $data[$item['id']] = [
-                        'label' => $item['name'],
-                        'url' => ($item['source_url']) ? $item['source_url'] : '#',
-                        'linkOptions' => [
-                            'title' => ($item['title']) ? Html::encode($item['title']) : null,
-                            'target' => ($item['target_blank']) ? "blank" : null
-                        ],
-                    ];
-                }
-
+            if (isset($item['auth'])) {
+                if (boolval($item['auth']) && Yii::$app->user->isGuest)
+                    continue;
             }
 
-            return $data;
+            if (is_object($item))
+                $item = (array)$item;
+
+            if ($item['parent'] == $parentId) {
+                $children = $this->buildTree($items, $item['id']);
+
+                $data = [
+                    'label' => $item['name'],
+                    'url' => ($item['url']) ? $item['url'] : '#'
+                ];
+
+                if (isset($item['title']))
+                    $data['linkOptions']['title'] = $item['title'];
+
+                if (isset($item['target']))
+                    $data['linkOptions']['target'] = $item['target'];
+
+                if ($children)
+                    $data['items'] = $children;
+
+                $tree[$item['id']] = $data;
+                unset($items[$item['id']]);
+            }
         }
+
+        return $tree;
     }
-*/
+
+
     /**
      * Menu of component method
      *
-     * @return array|null
+     * @param $menuId
+     * @param bool $navbarTree
+     * @return array|bool
      */
-    public function getItems($menu_id)
+    public function getItems($menuId, $asTree = false)
     {
-        $data = [];
-        $items = $this->model->getItems($menu_id);
-        $items = ArrayHelper::toArray($items);
-
+        $items = $this->model->getItems($menuId, true, false);
         if (is_countable($items)) {
-            $menuTree = ArrayHelper::buildTree($items);
-            $menuTree = ArrayHelper::changeKey($menuTree, ['name' => 'label']);
-            var_export($menuTree);
-            return $menuTree;
+            $items = ArrayHelper::toArray($items, [
+                'wdmg\menu\models\MenuItems' => [
+                    'id',
+                    'parent' => 'parent_id',
+                    'name',
+                    'title',
+                    'url' => 'source_url',
+                    /*'source_type',
+                    'source_id',*/
+                    'auth' => 'only_auth',
+                    'target' => function ($model) {
+                        if (boolval($model->target_blank))
+                            return '_blank';
+
+                    }
+                ]
+            ]);
+
+            if ($asTree)
+                return $this->buildTree($items);
+            else
+                return $items;
+
         }
 
         return false;
