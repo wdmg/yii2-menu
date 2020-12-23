@@ -50,7 +50,8 @@ To add a module to the project, add the following data in your configuration fil
     ],
 
 # Usage examples
-To build the ActiveForm with fields you may use the component method Yii::$app->menu->build() with `id` or `alias` of form item.
+To build the navigation menu you may use the component method Yii::$app->menu->getItems() with `id` or `alias` of menu.
+The second argument of the component function determines whether the list of menu items will be presented as a tree.
 
 **View in frontend**
 

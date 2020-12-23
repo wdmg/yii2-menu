@@ -1,7 +1,8 @@
 Changelog
 =========
 
-## 1.0.0 (2020-12-23)
+## 1.0.0 (2020-12-24)
+ * Update README.md
  * Get menu items by alias
  * Component for output menu items
  
