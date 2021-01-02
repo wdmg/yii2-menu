@@ -1,6 +1,10 @@
 Changelog
 =========
 
+## 1.0.1 (2021-01-02)
+ * Preview fixed
+ * RBAC implementation
+ 
 ## 1.0.0 (2020-12-24)
  * Update README.md
  * Get menu items by alias

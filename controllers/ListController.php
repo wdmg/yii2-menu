@@ -12,6 +12,7 @@ use yii\filters\AccessControl;
 use yii\helpers\FileHelper;
 use yii\helpers\Json;
 use wdmg\helpers\StringHelper;
+use wdmg\helpers\ArrayHelper;
 use wdmg\menu\models\Menu;
 use wdmg\menu\models\MenuSearch;
 use wdmg\menu\models\MenuItems;
@@ -45,7 +46,7 @@ class ListController extends Controller
                 'class' => AccessControl::class,
                 'rules' => [
                     [
-                        'roles' => ['admin'],
+                        'roles' => ['admin', 'editor'],
                         'allow' => true
                     ],
                 ],
@@ -276,19 +277,10 @@ class ListController extends Controller
     public function actionView($id)
     {
         $model = self::findModel($id);
-
-        $rows = $model->getMenuItems($model->id);
-        $dataProvider = new \yii\data\ArrayDataProvider([
-            'allModels' => $rows,
-            'pagination' => [
-                'pageSize' => 20,
-            ],
-        ]);
-
+        $items = \Yii::$app->menu->getItems($model->id, true);
         return $this->renderAjax('_view', [
-            'dataProvider' => $dataProvider,
+            'items' => $items,
             'module' => $this->module,
-            'model' => $model
         ]);
     }
 

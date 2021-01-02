@@ -7,10 +7,10 @@ namespace wdmg\menu\components;
  * Yii2 Menu
  *
  * @category        Component
- * @version         1.0.0
+ * @version         1.0.1
  * @author          Alexsander Vyshnyvetskyy <alex.vyshnyvetskyy@gmail.com>
  * @link            https://github.com/wdmg/yii2-menu
- * @copyright       Copyright (c) 2019 - 2020 W.D.M.Group, Ukraine
+ * @copyright       Copyright (c) 2019 - 2021 W.D.M.Group, Ukraine
  * @license         https://opensource.org/licenses/MIT Massachusetts Institute of Technology (MIT) License
  *
  */
@@ -39,7 +39,7 @@ class Menu extends Component
         $tree = [];
         foreach ($items as $item) {
 
-            if (!isset($item['name']))
+            if (!isset($item['label']))
                 continue;
 
             if (isset($item['auth'])) {
@@ -54,7 +54,7 @@ class Menu extends Component
                 $children = $this->buildTree($items, $item['id']);
 
                 $data = [
-                    'label' => $item['name'],
+                    'label' => $item['label'],
                     'url' => ($item['url']) ? $item['url'] : '#'
                 ];
 
@@ -91,7 +91,7 @@ class Menu extends Component
                 'wdmg\menu\models\MenuItems' => [
                     'id',
                     'parent' => 'parent_id',
-                    'name',
+                    'label' => 'name',
                     'title',
                     'url' => 'source_url',
                     /*'source_type',
