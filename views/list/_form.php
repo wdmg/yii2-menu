@@ -2,8 +2,10 @@
 
 use yii\helpers\Html;
 use yii\helpers\Url;
+use yii\widgets\Pjax;
 use yii\widgets\ActiveForm;
 use wdmg\widgets\SelectInput;
+use wdmg\widgets\LangSwitcher;
 
 /* @var $this yii\web\View */
 /* @var $model wdmg\menu\models\Menu */
@@ -11,11 +13,29 @@ use wdmg\widgets\SelectInput;
 ?>
 
 <div class="menu-form row">
-<?php if ($model->id) : ?>
+<?php Pjax::begin([
+    'id' => "menuContainer"
+]); ?>
+<?php if ($model->id || $model->source_id) : ?>
     <div class="col-xs-12 col-sm-12 col-md-8 col-lg-9">
 <?php else : ?>
     <div class="col-xs-12">
 <?php endif; ?>
+
+    <?= LangSwitcher::widget([
+        'label' => Yii::t('app/modules/menu', 'Language version'),
+        'model' => $model,
+        'renderWidget' => 'button-group',
+        'createRoute' => 'list/create',
+        'updateRoute' => 'list/update',
+        'supportLocales' => $this->context->module->supportLocales,
+        'versions' => (isset($model->source_id)) ? $model->getAllVersions($model->source_id, true) : $model->getAllVersions($model->id, true),
+        'options' => [
+            'id' => 'locale-switcher',
+            'class' => 'pull-right'
+        ]
+    ]); ?>
+
     <?php $form = ActiveForm::begin([
         'id' => "addMenuForm",
         'enableAjaxValidation' => true,
@@ -30,13 +50,13 @@ use wdmg\widgets\SelectInput;
     <?= $form->field($model, 'name'); ?>
 
     <?= $form->field($model, 'alias')->textInput([
-        'disabled' => ($model->id && $model->status == $model::STATUS_PUBLISHED) ? true : false,
+        'disabled' => ($model->id && $model->status == $model::STATUS_PUBLISHED || $model->source_id) ? true : false,
         'maxlength' => true
     ]); ?>
 
     <?= $form->field($model, 'description')->textarea(['rows' => 2]) ?>
 
-    <?php if ($model->id) : ?>
+    <?php if ($model->id || $model->source_id) : ?>
         <div id="dragMenu" class="form-group drag-menu">
             <label for="menuItems"><?= Yii::t('app/modules/menu', 'Menu items') ?></label>
             <?php if ($count = count($model->getItems())) : ?>
@@ -55,7 +75,8 @@ use wdmg\widgets\SelectInput;
     <?= $form->field($model, 'status')->widget(SelectInput::class, [
         'items' => $model->getStatusesList(false),
         'options' => [
-            'class' => 'form-control'
+            'class' => 'form-control',
+            // 'disabled' => ($model->source_id) ? true : false,
         ]
     ]); ?>
 
@@ -66,19 +87,19 @@ use wdmg\widgets\SelectInput;
     </div>
     <?php ActiveForm::end(); ?>
     </div>
-<?php if ($model->id) : ?>
+<?php if ($model->id || $model->source_id) : ?>
     <div class="col-xs-12 col-sm-12 col-md-4 col-lg-3">
         <fieldset>
             <label for="menuSources"><?= Yii::t('app/modules/menu', 'Available items') ?></label>
             <div id="menuSources" class="panel-group menu-sources" role="tablist" aria-multiselectable="true">
-            <?php if ($model->item) : ?>
+            <?php if ($menuItems) : ?>
                 <div id="source-link" class="panel panel-default">
                     <div id="heading-link" class="panel-heading" role="tab">
                         <h4 class="panel-title">
                             <a href="#collapse-link"
                                data-toggle="collapse"
                                data-parent="#menuSources"
-                               data-id="<?= $model->item::TYPE_LINK; ?>"
+                               data-id="<?= $menuItems::TYPE_LINK; ?>"
                                data-type="link"
                                data-name="<?= Yii::t('app/modules/menu', 'Custom link') ?>"
                                aria-expanded="true"
@@ -96,20 +117,20 @@ use wdmg\widgets\SelectInput;
                                 'options' => [
                                     'enctype' => 'multipart/form-data',
                                     'data' => [
-                                        'model' => \yii\helpers\StringHelper::basename(get_class($model->item))
+                                        'model' => \yii\helpers\StringHelper::basename(get_class($menuItems))
                                     ]
                                 ]
                             ]); ?>
-                            <?= $linkForm->field($model->item, 'name')->textInput(); ?>
-                            <?= $linkForm->field($model->item, 'title')->textInput(); ?>
-                            <?= $linkForm->field($model->item, 'source_url')->textInput(['autocomplete' => 'off']); ?>
-                            <?= $linkForm->field($model->item, 'only_auth', [
+                            <?= $linkForm->field($menuItems, 'name')->textInput(); ?>
+                            <?= $linkForm->field($menuItems, 'title')->textInput(); ?>
+                            <?= $linkForm->field($menuItems, 'source_url')->textInput(['autocomplete' => 'off']); ?>
+                            <?= $linkForm->field($menuItems, 'only_auth', [
                                 'template' => '{input} - {label}{error}',
                             ])->checkbox(['label' => null])->label(Yii::t('app/modules/menu', 'Only for signed users')) ?>
-                            <?= $linkForm->field($model->item, 'target_blank', [
+                            <?= $linkForm->field($menuItems, 'target_blank', [
                                 'template' => '{input} - {label}{error}',
                             ])->checkbox(['label' => null])->label(Yii::t('app/modules/menu', 'Open as target _blank')) ?>
-                            <?= $linkForm->field($model->item, 'source_type')->hiddenInput(['value' => $model->item::TYPE_LINK])->label(false); ?>
+                            <?= $linkForm->field($menuItems, 'source_type')->hiddenInput(['value' => $menuItems::TYPE_LINK])->label(false); ?>
                             <hr/>
                             <div class="form-group">
                                 <button class="btn btn-primary btn-sm" type="button" data-rel="add" disabled="true">
@@ -140,7 +161,7 @@ use wdmg\widgets\SelectInput;
                                        data-type="<?= $source['type']; ?>"
                                        data-name="<?= $source['name']; ?>"
                                        aria-expanded="false"
-                                       aria-controls="collapseOne"
+                                       aria-controls="collapse-<?= $source['type']; ?>"
                                        role="button">
                                         <?= $source['name']; ?> <span class="text-muted">(<?= count($source['items']); ?>)</span>
                                     </a>
@@ -208,9 +229,11 @@ use wdmg\widgets\SelectInput;
                 }
             ?>
             </div>
+            <?= $form->field($model, 'use_locale')->checkbox(['value' => intval($model->use_locale)]); ?>
         </fieldset>
     </div>
 <?php endif; ?>
+<?php Pjax::end(); ?>
 </div>
 <?php $this->registerJs(<<< JS
 $(document).ready(function() {
@@ -254,11 +277,15 @@ $(document).ready(function() {
     if ($('#addMenuItemForm').length)
         $("#addMenuItemForm").on("afterValidateAttribute", afterValidateAttribute);
     
+    $('#menu-use_locale').change(function () {
+        $.pjax.reload({container:'#menuContainer'}); 
+    });
+    
 });
 JS
 ); ?>
 
-<?php if ($model->item) : ?>
+<?php if ($menuItems) : ?>
 <template id="itemFormTemplate">
     <?php $itemForm = ActiveForm::begin([
         'enableAjaxValidation' => true,
@@ -267,23 +294,23 @@ JS
             'data' => [
                 'key' => '{{id}}',
                 'type' => '{{source_type}}',
-                'model' => \yii\helpers\StringHelper::basename(get_class($model->item))
+                'model' => \yii\helpers\StringHelper::basename(get_class($menuItems))
             ]
         ]
     ]); ?>
-    <?= $itemForm->field($model->item, 'name')->textInput(['value' => '{{name}}']); ?>
-    <?= $itemForm->field($model->item, 'title')->textInput(['value' => '{{title}}']); ?>
-    <?= $itemForm->field($model->item, 'source_url')->textInput(['value' => '{{source_url}}', 'autocomplete' => 'off']); ?>
-    <?= $itemForm->field($model->item, 'only_auth', [
+    <?= $itemForm->field($menuItems, 'name')->textInput(['value' => '{{name}}']); ?>
+    <?= $itemForm->field($menuItems, 'title')->textInput(['value' => '{{title}}']); ?>
+    <?= $itemForm->field($menuItems, 'source_url')->textInput(['value' => '{{source_url}}', 'autocomplete' => 'off']); ?>
+    <?= $itemForm->field($menuItems, 'only_auth', [
         'template' => '{input} - {label}{error}',
     ])->checkbox(['value' => '{{only_auth}}', 'label' => null])->label(Yii::t('app/modules/menu', 'Only for signed users')) ?>
-    <?= $itemForm->field($model->item, 'target_blank', [
+    <?= $itemForm->field($menuItems, 'target_blank', [
         'template' => '{input} - {label}{error}',
     ])->checkbox(['value' => '{{target_blank}}', 'label' => null])->label(Yii::t('app/modules/menu', 'Open as target _blank')) ?>
-    <?= $itemForm->field($model->item, 'parent_id')->hiddenInput(['value' => '{{parent_id}}'])->label(false); ?>
-    <?= $itemForm->field($model->item, 'menu_id')->hiddenInput(['value' => $model->id])->label(false); ?>
-    <?= $itemForm->field($model->item, 'source_type')->hiddenInput(['value' => '{{source_type}}'])->label(false); ?>
-    <?= $itemForm->field($model->item, 'source_id')->hiddenInput(['value' => '{{source_id}}'])->label(false); ?>
+    <?= $itemForm->field($menuItems, 'parent_id')->hiddenInput(['value' => '{{parent_id}}'])->label(false); ?>
+    <?= $itemForm->field($menuItems, 'menu_id')->hiddenInput(['value' => $model->id])->label(false); ?>
+    <?= $itemForm->field($menuItems, 'source_type')->hiddenInput(['value' => '{{source_type}}'])->label(false); ?>
+    <?= $itemForm->field($menuItems, 'source_id')->hiddenInput(['value' => '{{source_id}}'])->label(false); ?>
     <div class="form-group row">
         <label for="itemSource" class="col-xs-4 col-sm-2 col-form-label"><?= Yii::t('app/modules/menu', 'Source of') ?>:</label>
         <div class="col-xs-8 col-sm-10 form-control-plaintext">

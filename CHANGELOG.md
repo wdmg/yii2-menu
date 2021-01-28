@@ -1,6 +1,9 @@
 Changelog
 =========
 
+## 1.0.*
+ * Multi-language implementation
+ 
 ## 1.0.1 (2021-01-02)
  * Preview fixed
  * RBAC implementation

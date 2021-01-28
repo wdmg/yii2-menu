@@ -11,32 +11,34 @@ use yii\behaviors\TimestampBehavior;
 use yii\behaviors\BlameableBehavior;
 use wdmg\validators\JsonValidator;
 use wdmg\base\behaviors\SluggableBehavior;
-use wdmg\base\models\ActiveRecord;
+use wdmg\base\models\ActiveRecordML;
 use wdmg\menu\models\MenuItems;
 
 /**
  * This is the model class for table "{{%menu}}".
  *
  * @property int $id
+ * @property int $source_id
  * @property string $title
  * @property string $description
  * @property string $alias
  * @property int $status
+ * @property string $locale
  * @property string $created_at
  * @property integer $created_by
  * @property string $updated_at
  * @property integer $updated_by
  */
     
-class Menu extends ActiveRecord
+class Menu extends ActiveRecordML
 {
 
     const STATUS_DRAFT = 0;
     const STATUS_PUBLISHED = 1;
 
     private $module;
-    public $item;
     public $items;
+    public $use_locale = true;
 
     /**
      * {@inheritdoc}
@@ -98,6 +100,7 @@ class Menu extends ActiveRecord
             [['name', 'alias'], 'string', 'min' => 3, 'max' => 64],
             ['description', 'string', 'max' => 255],
             ['status', 'integer'],
+            ['use_locale', 'boolean'],
             ['items', JsonValidator::class, 'message' => Yii::t('app/modules/menu', 'The value of field `{attribute}` must be a valid JSON, error: {error}.')],
             ['status', 'in', 'range' => array_keys($this->getStatusesList(false))],
             ['alias', 'match', 'skipOnEmpty' => true, 'pattern' => '/^[A-Za-z0-9\-\_]+$/', 'message' => Yii::t('app/modules/menu','It allowed only Latin alphabet, numbers and the «-», «_» characters.')],
@@ -118,11 +121,14 @@ class Menu extends ActiveRecord
     {
         return [
             'id' => Yii::t('app/modules/menu', 'ID'),
+            'source_id' => Yii::t('app/modules/menu', 'Source ID'),
             'name' => Yii::t('app/modules/menu', 'Menu name'),
             'description' => Yii::t('app/modules/menu', 'Description'),
             'alias' => Yii::t('app/modules/menu', 'Alias'),
             'items' => Yii::t('app/modules/menu', 'Items'),
             'status' => Yii::t('app/modules/menu', 'Status'),
+            'locale' => Yii::t('app/modules/menu', 'Locale'),
+            'use_locale' => Yii::t('app/modules/menu', '- Show only current locale'),
             'created_at' => Yii::t('app/modules/menu', 'Created at'),
             'created_by' => Yii::t('app/modules/menu', 'Created by'),
             'updated_at' => Yii::t('app/modules/menu', 'Updated at'),
@@ -318,12 +324,13 @@ class Menu extends ActiveRecord
         $list = [];
         if (is_array($models = $this->module->supportModels)) {
 
+            $cond = (isset($this->locale) && $this->use_locale) ? ['locale' => $this->locale] : [];
             $sourceTypes = MenuItems::getTypesList(false, true);
             foreach ($models as $name => $class) {
                 $model = new $class();
 
                 $items = [];
-                foreach ($model->getAllPublished() as $item) { // @TODO: Add condition by lang locale
+                foreach ($model->getAllPublished($cond) as $item) { // @TODO: Add condition by lang locale
                     if (!is_null($item->url) && !isset($items[$item->url])) {
                         $items[] = [
                             'id' => $item->id,

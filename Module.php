@@ -53,6 +53,12 @@ class Module extends BaseModule
     ];
 
     /**
+     * @var array, the list of support locales for multi-language versions of menu.
+     * @note This variable will be override if you use the `wdmg\yii2-translations` module.
+     */
+    public $supportLocales = ['ru-RU', 'uk-UA', 'en-US'];
+
+    /**
      * @var string the module version
      */
     private $version = "1.0.1";

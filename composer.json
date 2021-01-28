@@ -38,7 +38,8 @@
         "pages": "wdmg\\pages\\models\\Pages",
         "news": "wdmg\\news\\models\\News",
         "blog": "wdmg\\blog\\models\\Posts"
-      }
+      },
+      "supportLocales": ["ru-RU", "uk-UA", "en-US"]
     }
   }
 }

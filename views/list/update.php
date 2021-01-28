@@ -23,6 +23,7 @@ $this->params['breadcrumbs'][] = Yii::t('app/modules/menu', 'Updating');
 <div class="menu-update">
     <?= $this->render('_form', [
         'module' => $module,
+        'menuItems' => $menuItems,
         'model' => $model
     ]); ?>
 </div>

@@ -586,6 +586,8 @@ DragMenu.onAddSuccess = function (dragObject, menuItems) {
 
 DragMenu.onInit = function () {
     let form = document.getElementById('addMenuForm');
-    let data = JSON.parse(form.querySelector('input#menu-items').value);
-    this.buildMenuItems(data);
+    let data = form.querySelector('input#menu-items').value;
+    if (data) {
+        this.buildMenuItems(JSON.parse(data));
+    }
 };

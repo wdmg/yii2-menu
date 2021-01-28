@@ -18,6 +18,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="menu-create">
     <?= $this->render('_form', [
         'module' => $module,
+        'menuItems' => $menuItems,
         'model' => $model
     ]); ?>
 </div>

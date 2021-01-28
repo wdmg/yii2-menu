@@ -17,6 +17,7 @@ use wdmg\base\models\ActiveRecord;
  * @property int $id
  * @property int $menu_id
  * @property int $parent_id
+ * @property string $locale
  * @property string $name
  * @property string $title
  * @property int $source_type
@@ -81,6 +82,7 @@ class MenuItems extends ActiveRecord
             [['name', 'source_url', 'source_type'], 'required'],
             ['name', 'string', 'min' => 3, 'max' => 128],
             [['title', 'source_url'], 'string', 'max' => 255],
+            ['locale', 'string', 'max' => 10],
             [['menu_id', 'parent_id', 'source_type', 'source_id', 'only_auth', 'target_blank'], 'integer'],
             ['source_type', 'default', 'value' => self::TYPE_LINK],
             ['source_type', 'in', 'range' => array_keys($this->getTypesList(false))],
@@ -103,6 +105,7 @@ class MenuItems extends ActiveRecord
             'id' => Yii::t('app/modules/menu', 'ID'),
             'menu_id' => Yii::t('app/modules/menu', 'Menu ID'),
             'parent_id' => Yii::t('app/modules/menu', 'Parent ID'),
+            'locale' => Yii::t('app/modules/menu', 'Locale'),
             'name' => Yii::t('app/modules/menu', 'Name'),
             'title' => Yii::t('app/modules/menu', 'Title'),
             'source_type' => Yii::t('app/modules/menu', 'Type'),
