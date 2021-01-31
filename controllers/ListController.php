@@ -166,6 +166,11 @@ class ListController extends Controller
             }
         }
 
+        if ($model->source_id)
+            $model->setScenario($model::SCENARIO_UPDATE);
+        else
+            $model->setScenario($model::SCENARIO_CREATE);
+
         if (Yii::$app->request->isAjax) {
             if ($model->load(Yii::$app->request->post())) {
                 if ($model->validate())
@@ -218,7 +223,9 @@ class ListController extends Controller
 
     public function actionUpdate($id)
     {
+
         $model = self::findModel($id);
+        $model->setScenario($model::SCENARIO_UPDATE);
 
         // No language is set for this model, we will use the current user language
         if (is_null($model->locale)) {
@@ -240,9 +247,10 @@ class ListController extends Controller
             }
         }
 
-        /*if (Yii::$app->request->isPjax) {
-            die();
-        } else */if (Yii::$app->request->isAjax) {
+        if ($use_locale = filter_var(Yii::$app->request->get('use_locale', null), FILTER_VALIDATE_BOOLEAN))
+            $model->use_locale = boolval($use_locale);
+
+        if (!Yii::$app->request->isPjax && Yii::$app->request->isAjax) {
             if (Yii::$app->request->get('model', null) == "Menu") {
 
                 if ($model->load(Yii::$app->request->post())) {
@@ -367,27 +375,37 @@ class ListController extends Controller
         return $this->redirect(['list/index']);
     }
 
-    public function actionView($id)
+    public function actionView($id, $locale = null)
     {
         $model = self::findModel($id);
-        $items = \Yii::$app->menu->getItems($model->id, true);
+
+        if (is_null($locale))
+            $locale = $model->locale;
+
+        $items = \Yii::$app->menu->getItems($model->id, true, $locale);
         return $this->renderAjax('_view', [
             'items' => $items,
             'module' => $this->module,
+            'locale' => $locale,
         ]);
     }
 
     /**
      * Finds the Menu item model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
-     * @param integer $id
-     * @return menu model item
+     *
+     * @param $id
+     * @return ActiveRecord model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = Menu::findOne($id)) !== null) {
+
+        if (is_null($this->_locale) && ($model = Menu::findOne(['id' => $id])) !== null) {
             return $model;
+        } else {
+            if (($model = Menu::findOne(['source_id' => $id, 'locale' => $this->_locale])) !== null)
+                return $model;
         }
 
         throw new NotFoundHttpException(Yii::t('app/modules/menu', 'The requested menu item does not exist.'));

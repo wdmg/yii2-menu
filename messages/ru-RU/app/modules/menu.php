@@ -77,6 +77,27 @@ return [
     'OK! Menu `{name}` successfully deleted.' => "OK! Меню `{name}` было успешно удалено!",
     'An error occurred while deleting a menu `{name}`.' => "Произошла ошибка при удалении меню `{name}`.",
 
+
+    'Language version' => "Языковая версия",
+    'Language versions' => "Языковые версии",
+    'No display language has been set. Source language will be selected: {language}' => 'Не задан язык отображения. Будет выбран исходный язык: {language}',
+    '- Show elements for the current language' => '- Отображать элементы для текущего языка',
+
+    'View' => "Просмотр",
+    'View source version: {language}' => "Смотреть исходную версию: {language}",
+    'View language version: {language}' => "Смотреть языковую версию: {language}",
+    'Edit' => "Изменить",
+    'Edit source version: {language}' => "Изменить исходную версию: {language}",
+    'Edit language version: {language}' => "Изменить языковую версию: {language}",
+    'Delete' => "Удалить",
+    'Delete source version: {language}' => "Удалить исходную версию: {language}",
+    'Delete language version: {language}' => "Удалить языковую версию: {language}",
+    'Source version: {language}' => "Исходная версия: {language}",
+    'Language version: {language}' => "Языковая версия: {language}",
+    'Edit language version: {language}' => "Изменить языковую версию: {language}",
+    'Add language version: {language}' => "Добавить языковую версию: {language}",
+    'View language version: {language}' => "Смотреть языковую версию: {language}",
+    'Delete language version: {language}' => "Удалить языковую версию: {language}",
 ];
 
 ?>

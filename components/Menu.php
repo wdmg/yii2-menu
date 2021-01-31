@@ -7,7 +7,7 @@ namespace wdmg\menu\components;
  * Yii2 Menu
  *
  * @category        Component
- * @version         1.0.1
+ * @version         1.1.0
  * @author          Alexsander Vyshnyvetskyy <alex.vyshnyvetskyy@gmail.com>
  * @link            https://github.com/wdmg/yii2-menu
  * @copyright       Copyright (c) 2019 - 2021 W.D.M.Group, Ukraine
@@ -35,6 +35,13 @@ class Menu extends Component
         $this->model = new \wdmg\menu\models\Menu;
     }
 
+    /**
+     * Recursion to build a tree menu.
+     *
+     * @param array $items
+     * @param int $parentId
+     * @return array
+     */
     private function buildTree(&$items = [], $parentId = 0) {
         $tree = [];
         foreach ($items as $item) {
@@ -77,16 +84,22 @@ class Menu extends Component
 
 
     /**
-     * Menu of component method
+     * Menu component, returns the items of the specified menu.
      *
      * @param $menuId
-     * @param bool $navbarTree
+     * @param null $locale
+     * @param bool $asTree
      * @return array|bool
      */
-    public function getItems($menuId, $asTree = false)
+    public function getItems($menuId, $asTree = false, $locale = null)
     {
-        $items = $this->model->getItems($menuId, true, false);
+
+        if (is_null($locale) && isset(Yii::$app->language))
+            $locale = Yii::$app->language;
+
+        $items = $this->model->getItems($menuId, $locale, true, false);
         if (is_countable($items)) {
+
             $items = ArrayHelper::toArray($items, [
                 'wdmg\menu\models\MenuItems' => [
                     'id',
@@ -94,8 +107,6 @@ class Menu extends Component
                     'label' => 'name',
                     'title',
                     'url' => 'source_url',
-                    /*'source_type',
-                    'source_id',*/
                     'auth' => 'only_auth',
                     'target' => function ($model) {
                         if (boolval($model->target_blank))

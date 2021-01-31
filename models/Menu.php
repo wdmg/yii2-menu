@@ -38,7 +38,7 @@ class Menu extends ActiveRecordML
 
     private $module;
     public $items;
-    public $use_locale = true;
+    public $use_locale;
 
     /**
      * {@inheritdoc}
@@ -128,7 +128,7 @@ class Menu extends ActiveRecordML
             'items' => Yii::t('app/modules/menu', 'Items'),
             'status' => Yii::t('app/modules/menu', 'Status'),
             'locale' => Yii::t('app/modules/menu', 'Locale'),
-            'use_locale' => Yii::t('app/modules/menu', '- Show only current locale'),
+            'use_locale' => Yii::t('app/modules/menu', '- Show elements for the current language'),
             'created_at' => Yii::t('app/modules/menu', 'Created at'),
             'created_by' => Yii::t('app/modules/menu', 'Created by'),
             'updated_at' => Yii::t('app/modules/menu', 'Updated at'),
@@ -136,34 +136,19 @@ class Menu extends ActiveRecordML
         ];
     }
 
-
-    /**
-     * {@inheritdoc}
-     */
-    public function beforeValidate()
-    {
-        /*if (is_string($this->items) && JsonValidator::isValid($this->items)) {
-            $this->items = \yii\helpers\Json::decode($this->items);
-        } elseif (is_array($this->items)) {
-            $this->items = \yii\helpers\Json::encode($this->items);
-        }*/
-
-        return parent::beforeValidate();
-    }
-
     /**
      * {@inheritdoc}
      */
     public function afterFind()
     {
-        $this->items = self::getItems($this->id, false, true);
+        $this->items = self::getItems($this->id, $this->locale, false, true);
         parent::afterFind();
     }
 
     /**
      * {@inheritdoc}
      */
-    public function beforeSave($insert)
+    public function afterSave($insert, $changedAttributes)
     {
 
         if (is_string($this->status))
@@ -211,13 +196,6 @@ class Menu extends ActiveRecordML
                 if (isset($item['source_id']))
                     $model->source_id = $item['source_id'];
 
-                /*if (isset($item['source_type'])) {
-                    if ($type = array_search($item['source_type'], $sourceTypes))
-                        $model->source_type = array_search($item['source_type'], $sourceTypes);
-                    else
-                        $model->source_type = 0; // Default type for unrecornized menu items
-                }*/
-
                 if (isset($item['source_id']))
                     $model->source_id = intval($item['source_id']);
 
@@ -237,7 +215,7 @@ class Menu extends ActiveRecordML
             }
         }
 
-        return parent::beforeSave($insert);
+        parent::afterSave($insert, $changedAttributes);
     }
 
     /**
@@ -302,8 +280,19 @@ class Menu extends ActiveRecordML
         return null;
     }
 
-    public function getItems($menu_id = null, $published = false, $asJson = false)
-    {
+    /**
+     * Returns a list of menu items. If the ID is specified as a string, we will search for the menu alias,
+     * otherwise, by primary key.
+     *
+     * @param null $menu_id
+     * @param null $locale
+     * @param bool $published
+     * @param bool $asJson
+     * @return array|false|string|\yii\db\ActiveRecord[]
+     */
+    public function getItems($menu_id = null, $locale = null, $published = false, $asJson = false)
+        {
+
         if (is_int($menu_id))
             $items = MenuItems::find()->where(['menu_id' => $menu_id]);
         else if (is_string($menu_id))
@@ -311,14 +300,24 @@ class Menu extends ActiveRecordML
         else
             $items = MenuItems::find()->where(['menu_id' => $this->id]);
 
+        $items->joinWith('menu');
+
+        if ($locale)
+            $items->andWhere(['locale' => $locale]);
+
         if ($published)
-            $items->joinWith('menu')->andWhere(['status' => self::STATUS_PUBLISHED]);
+            $items->andWhere(['status' => self::STATUS_PUBLISHED]);
 
         $items->orderBy(['id' => SORT_ASC]);
-
         return ($asJson) ? json_encode($items->asArray()->all()) : $items->all();
     }
 
+    /**
+     * Returns a list of supported resources for building a widget for adding new menu items.
+     *
+     * @param bool $asJson
+     * @return array|false|string
+     */
     public function getSourcesList($asJson = false)
     {
         $list = [];

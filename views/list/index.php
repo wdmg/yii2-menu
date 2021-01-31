@@ -39,7 +39,6 @@ if (isset(Yii::$app->translations) && class_exists('\wdmg\translations\FlagsAsse
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
-             'id',
              'name',
              'description',
              'alias',
@@ -252,11 +251,23 @@ if (isset(Yii::$app->translations) && class_exists('\wdmg\translations\FlagsAsse
                                     if ($data->locale === $locale['locale']) // It`s source version
                                         $output[] = Html::a(Yii::t('app/modules/menu','View source version: {language}', [
                                             'language' => $locale['name']
-                                        ]), ['list/view', 'id' => $data->id]);
+                                        ]), ['list/view', 'id' => $data->id], [
+                                            'data' => [
+                                                'toggle' => "modal",
+                                                'target' => "#menuPreview",
+                                                'pjax' => 0,
+                                            ]
+                                        ]);
                                     else  // Other localization versions
                                         $output[] = Html::a(Yii::t('app/modules/menu','View language version: {language}', [
                                             'language' => $locale['name']
-                                        ]), ['list/view', 'id' => $data->id, 'locale' => $locale['locale']]);
+                                        ]), ['list/view', 'id' => $data->id, 'locale' => $locale['locale']], [
+                                            'data' => [
+                                                'toggle' => "modal",
+                                                'target' => "#menuPreview",
+                                                'pjax' => 0,
+                                            ]
+                                        ]);
 
                                 }
                             }
@@ -272,11 +283,23 @@ if (isset(Yii::$app->translations) && class_exists('\wdmg\translations\FlagsAsse
                                     if ($data->locale === $locale) // It`s source version
                                         $output[] = Html::a(Yii::t('app/modules/menu','View source version: {language}', [
                                             'language' => $language
-                                        ]), ['list/view', 'id' => $data->id]);
+                                        ]), ['list/view', 'id' => $data->id], [
+                                            'data' => [
+                                                'toggle' => "modal",
+                                                'target' => "#menuPreview",
+                                                'pjax' => 0,
+                                            ]
+                                        ]);
                                     else  // Other localization versions
                                         $output[] = Html::a(Yii::t('app/modules/menu','View language version: {language}', [
                                             'language' => $language
-                                        ]), ['list/view', 'id' => $data->id, 'locale' => $locale]);
+                                        ]), ['list/view', 'id' => $data->id, 'locale' => $locale], [
+                                            'data' => [
+                                                'toggle' => "modal",
+                                                'target' => "#menuPreview",
+                                                'pjax' => 0,
+                                            ]
+                                        ]);
 
                                 }
                             }
@@ -310,7 +333,12 @@ if (isset(Yii::$app->translations) && class_exists('\wdmg\translations\FlagsAsse
                                 'list/view',
                                 'id' => $data->id
                             ], [
-                                'class' => 'btn btn-link btn-xs'
+                                'class' => 'btn btn-link btn-xs',
+                                'data' => [
+                                    'toggle' => "modal",
+                                    'target' => "#menuPreview",
+                                    'pjax' => 0,
+                                ]
                             ]
                         );
                     },
@@ -515,7 +543,7 @@ if (isset(Yii::$app->translations) && class_exists('\wdmg\translations\FlagsAsse
     <hr/>
     <div>
         <?= Html::a(Yii::t('app/modules/menu', 'Add new menu'), ['list/create'], [
-            'class' => 'btn btn-success pull-right'
+            'class' => 'btn btn-add btn-success pull-right'
         ]) ?>
     </div>
     <?php Pjax::end(); ?>

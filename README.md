@@ -98,6 +98,7 @@ Use the `Module::dashboardNavItems()` method of the module to generate a navigat
 
 
 # Status and version [ready to use]
+* v.1.1.0 - Multi-language implementation
 * v.1.0.1 - Preview fixed, RBAC implementation
 * v.1.0.0 - Component for output menu items.
 * v.0.0.1 - CRUD, assets, menu item form.

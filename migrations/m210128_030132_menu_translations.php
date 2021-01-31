@@ -51,25 +51,6 @@ class m210128_030132_menu_translations extends Migration
                 );
             }
         }
-
-        if (is_null($this->getDb()->getSchema()->getTableSchema('{{%menu_items}}')->getColumn('locale'))) {
-            $this->addColumn('{{%menu_items}}', 'locale', $this->string(10)->defaultValue($defaultLocale)->after('parent_id'));
-            $this->createIndex('{{%idx-menu-items-locale}}', '{{%menu_items}}', ['locale']);
-
-            // If module `Translations` exist setup foreign key `locale` to `trans_langs.locale`
-            if (class_exists('\wdmg\translations\models\Languages')) {
-                $langsTable = \wdmg\translations\models\Languages::tableName();
-                $this->addForeignKey(
-                    'fk_menu_items_to_langs',
-                    '{{%menu_items}}',
-                    'locale',
-                    $langsTable,
-                    'locale',
-                    'NO ACTION',
-                    'CASCADE'
-                );
-            }
-        }
     }
 
     /**
@@ -96,21 +77,6 @@ class m210128_030132_menu_translations extends Migration
                     $this->dropForeignKey(
                         'fk_menu_to_langs',
                         '{{%menu}}'
-                    );
-                }
-            }
-        }
-
-        if (!is_null($this->getDb()->getSchema()->getTableSchema('{{%menu_items}}')->getColumn('locale'))) {
-            $this->dropIndex('{{%idx-menu-items-locale}}', '{{%menu_items}}');
-            $this->dropColumn('{{%menu_items}}', 'locale');
-
-            if (class_exists('\wdmg\translations\models\Languages')) {
-                $langsTable = \wdmg\translations\models\Languages::tableName();
-                if (!(Yii::$app->db->getTableSchema($langsTable, true) === null)) {
-                    $this->dropForeignKey(
-                        'fk_menu_items_to_langs',
-                        '{{%menu_items}}'
                     );
                 }
             }

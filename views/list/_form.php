@@ -13,9 +13,6 @@ use wdmg\widgets\LangSwitcher;
 ?>
 
 <div class="menu-form row">
-<?php Pjax::begin([
-    'id' => "menuContainer"
-]); ?>
 <?php if ($model->id || $model->source_id) : ?>
     <div class="col-xs-12 col-sm-12 col-md-8 col-lg-9">
 <?php else : ?>
@@ -89,6 +86,9 @@ use wdmg\widgets\LangSwitcher;
     </div>
 <?php if ($model->id || $model->source_id) : ?>
     <div class="col-xs-12 col-sm-12 col-md-4 col-lg-3">
+        <?php Pjax::begin([
+            'id' => "sourcesContainer"
+        ]); ?>
         <fieldset>
             <label for="menuSources"><?= Yii::t('app/modules/menu', 'Available items') ?></label>
             <div id="menuSources" class="panel-group menu-sources" role="tablist" aria-multiselectable="true">
@@ -231,9 +231,9 @@ use wdmg\widgets\LangSwitcher;
             </div>
             <?= $form->field($model, 'use_locale')->checkbox(['value' => intval($model->use_locale)]); ?>
         </fieldset>
+        <?php Pjax::end(); ?>
     </div>
 <?php endif; ?>
-<?php Pjax::end(); ?>
 </div>
 <?php $this->registerJs(<<< JS
 $(document).ready(function() {
@@ -277,8 +277,15 @@ $(document).ready(function() {
     if ($('#addMenuItemForm').length)
         $("#addMenuItemForm").on("afterValidateAttribute", afterValidateAttribute);
     
-    $('#menu-use_locale').change(function () {
-        $.pjax.reload({container:'#menuContainer'}); 
+    $('body').delegate('#menu-use_locale', 'change', function() {
+        let reloadUrl = new URL(window.location.href, window.location.origin);
+        
+        if ($(this).prop('checked'))
+            reloadUrl.searchParams.set('use_locale', 1);
+        else
+            reloadUrl.searchParams.set('use_locale', 0);
+        
+        $.pjax.reload({container: "#sourcesContainer", timeout: 5000, url: reloadUrl.href});
     });
     
 });
