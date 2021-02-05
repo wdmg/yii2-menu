@@ -1,6 +1,9 @@
 Changelog
 =========
 
+## 1.1.1 (2021-02-05)
+ * Migration error fixed
+ 
 ## 1.1.0 (2021-01-31)
  * Multi-language implementation
  

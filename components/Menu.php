@@ -7,7 +7,7 @@ namespace wdmg\menu\components;
  * Yii2 Menu
  *
  * @category        Component
- * @version         1.1.0
+ * @version         1.1.1
  * @author          Alexsander Vyshnyvetskyy <alex.vyshnyvetskyy@gmail.com>
  * @link            https://github.com/wdmg/yii2-menu
  * @copyright       Copyright (c) 2019 - 2021 W.D.M.Group, Ukraine

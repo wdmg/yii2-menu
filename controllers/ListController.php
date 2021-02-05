@@ -166,6 +166,8 @@ class ListController extends Controller
             }
         }
 
+        // We change the scenarios if we create a language version. In this case, a number of validations should
+        // not be applied by uniqueness
         if ($model->source_id)
             $model->setScenario($model::SCENARIO_UPDATE);
         else

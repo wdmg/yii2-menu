@@ -43,7 +43,7 @@ class m201203_210856_menu_items extends Migration
 
 
         // Setup foreign key to main menu
-        $this->createIndex('{{%idx-menu_item}}', '{{%menu_items}}', ['menu_id', 'name', 'url', 'type', 'source_id']);
+        $this->createIndex('{{%idx-menu_item}}', '{{%menu_items}}', ['menu_id', 'parent_id', 'name', 'source_id', 'source_type', 'source_url']);
         $this->addForeignKey(
             'fk_menu_item',
             '{{%menu_items}}',
