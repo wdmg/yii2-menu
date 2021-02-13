@@ -1,6 +1,9 @@
 Changelog
 =========
 
+## 1.1.*
+ * Lang attribute for HTML tags and inputs
+ 
 ## 1.1.1 (2021-02-05)
  * Migration error fixed
  

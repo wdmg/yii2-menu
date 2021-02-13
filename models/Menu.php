@@ -335,6 +335,7 @@ class Menu extends ActiveRecordML
                             'id' => $item->id,
                             'name' => $item->name,
                             'title' => $item->title,
+                            'locale' => ($item->locale ?? null),
                             'url' => $item->url
                         ];
                     }
