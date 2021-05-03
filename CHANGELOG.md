@@ -2,6 +2,7 @@ Changelog
 =========
 
 ## 1.1.*
+ * Get menu items fixed
  * Lang attribute for HTML tags and inputs
  
 ## 1.1.1 (2021-02-05)

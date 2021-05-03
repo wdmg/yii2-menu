@@ -67,7 +67,9 @@ use wdmg\widgets\LangSwitcher;
         </div>
     <?php endif; ?>
 
-    <?= $form->field($model, 'items')->hiddenInput(['value' => $model->items])->label(false); ?>
+    <?= $form->field($model, 'items')->hiddenInput([
+            'value' => $model->getItems($model->id, $model->locale, false, true)
+    ])->label(false); ?>
 
     <?= $form->field($model, 'status')->widget(SelectInput::class, [
         'items' => $model->getStatusesList(false),
