@@ -2,6 +2,7 @@ Changelog
 =========
 
 ## 1.1.*
+ * Show modal call fixed
  * Get menu items fixed
  * Lang attribute for HTML tags and inputs
  

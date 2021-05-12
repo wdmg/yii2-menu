@@ -254,7 +254,7 @@ if (isset(Yii::$app->translations) && class_exists('\wdmg\translations\FlagsAsse
                                         ]), ['list/view', 'id' => $data->id], [
                                             'data' => [
                                                 'toggle' => "modal",
-                                                'target' => "#menuPreview",
+                                                'target' => "#menuPreviewModal",
                                                 'pjax' => 0,
                                             ]
                                         ]);
@@ -264,7 +264,7 @@ if (isset(Yii::$app->translations) && class_exists('\wdmg\translations\FlagsAsse
                                         ]), ['list/view', 'id' => $data->id, 'locale' => $locale['locale']], [
                                             'data' => [
                                                 'toggle' => "modal",
-                                                'target' => "#menuPreview",
+                                                'target' => "#menuPreviewModal",
                                                 'pjax' => 0,
                                             ]
                                         ]);
@@ -286,7 +286,7 @@ if (isset(Yii::$app->translations) && class_exists('\wdmg\translations\FlagsAsse
                                         ]), ['list/view', 'id' => $data->id], [
                                             'data' => [
                                                 'toggle' => "modal",
-                                                'target' => "#menuPreview",
+                                                'target' => "#menuPreviewModal",
                                                 'pjax' => 0,
                                             ]
                                         ]);
@@ -296,7 +296,7 @@ if (isset(Yii::$app->translations) && class_exists('\wdmg\translations\FlagsAsse
                                         ]), ['list/view', 'id' => $data->id, 'locale' => $locale], [
                                             'data' => [
                                                 'toggle' => "modal",
-                                                'target' => "#menuPreview",
+                                                'target' => "#menuPreviewModal",
                                                 'pjax' => 0,
                                             ]
                                         ]);
@@ -336,7 +336,7 @@ if (isset(Yii::$app->translations) && class_exists('\wdmg\translations\FlagsAsse
                                 'class' => 'btn btn-link btn-xs',
                                 'data' => [
                                     'toggle' => "modal",
-                                    'target' => "#menuPreview",
+                                    'target' => "#menuPreviewModal",
                                     'pjax' => 0,
                                 ]
                             ]
@@ -563,11 +563,14 @@ if (isset(Yii::$app->translations) && class_exists('\wdmg\translations\FlagsAsse
                             $(target).find('.modal-footer').remove();
                             $(target).find('.modal-content').append($(data).find('.modal-footer'));
                         }
+                        
                         if ($(target).find('button[type="submit"]').length > 0 && $(target).find('form').length > 0) {
                             $(target).find('button[type="submit"]').on('click', function(event) {
-                              $(target).find('form').submit();
+                                event.preventDefault();
+                                $(target).find('form').submit();
                             });
                         }
+                        
                         $(target).modal();
                     }
                 }  
@@ -578,7 +581,7 @@ JS
 ); ?>
 
 <?php Modal::begin([
-    'id' => 'menuPreview',
+    'id' => 'menuPreviewModal',
     'header' => '<h4 class="modal-title">'.Yii::t('app/modules/menu', 'Menu preview').'</h4>',
     'clientOptions' => [
         'show' => false
