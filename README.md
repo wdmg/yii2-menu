@@ -11,7 +11,7 @@ Module for creating and managing menus. It has its own component for displaying 
 
 This module is an integral part of the [Butterfly.СMS](https://butterflycms.com/) content management system, but can also be used as an standalone extension.
 
-Copyrights (c) 2019-2021 [W.D.M.Group, Ukraine](https://wdmg.com.ua/)
+Copyrights (c) 2019-2023 [W.D.M.Group, Ukraine](https://wdmg.com.ua/)
 
 # Requirements 
 * PHP 5.6 or higher
@@ -98,6 +98,7 @@ Use the `Module::dashboardNavItems()` method of the module to generate a navigat
 
 
 # Status and version [ready to use]
+* v.1.2.0 - Fix node sass, update dependencies and copyrights
 * v.1.1.1 - Migration error fixed
 * v.1.1.0 - Multi-language implementation
 * v.1.0.1 - Preview fixed, RBAC implementation

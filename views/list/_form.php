@@ -44,14 +44,14 @@ use wdmg\widgets\LangSwitcher;
         ]
     ]); ?>
 
-    <?= $form->field($model, 'name')->textInput(['lang' => ($model->locale ?? Yii::$app->language)]); ?>
+    <?= $form->field($model, 'name'); ?>
 
     <?= $form->field($model, 'alias')->textInput([
         'disabled' => ($model->id && $model->status == $model::STATUS_PUBLISHED || $model->source_id) ? true : false,
         'maxlength' => true
     ]); ?>
 
-    <?= $form->field($model, 'description')->textarea(['rows' => 2, 'lang' => ($model->locale ?? Yii::$app->language)]) ?>
+    <?= $form->field($model, 'description')->textarea(['rows' => 2]) ?>
 
     <?php if ($model->id || $model->source_id) : ?>
         <div id="dragMenu" class="form-group drag-menu">
@@ -67,9 +67,7 @@ use wdmg\widgets\LangSwitcher;
         </div>
     <?php endif; ?>
 
-    <?= $form->field($model, 'items')->hiddenInput([
-            'value' => $model->getItems($model->id, $model->locale, false, true)
-    ])->label(false); ?>
+    <?= $form->field($model, 'items')->hiddenInput(['value' => $model->items])->label(false); ?>
 
     <?= $form->field($model, 'status')->widget(SelectInput::class, [
         'items' => $model->getStatusesList(false),
@@ -123,8 +121,8 @@ use wdmg\widgets\LangSwitcher;
                                     ]
                                 ]
                             ]); ?>
-                            <?= $linkForm->field($menuItems, 'name')->textInput(['lang' => ($model->locale ?? Yii::$app->language)]); ?>
-                            <?= $linkForm->field($menuItems, 'title')->textInput(['lang' => ($model->locale ?? Yii::$app->language)]); ?>
+                            <?= $linkForm->field($menuItems, 'name')->textInput(); ?>
+                            <?= $linkForm->field($menuItems, 'title')->textInput(); ?>
                             <?= $linkForm->field($menuItems, 'source_url')->textInput(['autocomplete' => 'off']); ?>
                             <?= $linkForm->field($menuItems, 'only_auth', [
                                 'template' => '{input} - {label}{error}',
@@ -185,7 +183,6 @@ use wdmg\widgets\LangSwitcher;
                                                             'source_name' => $source['name'],
                                                             'name' => $item['name'],
                                                             'title' => $item['title'],
-                                                            'lang' => $item['locale'],
                                                             'source_id' => $item['id'],
                                                             'source_type' => $source['id'],
                                                             'source_url' => $item['url'],
@@ -308,8 +305,8 @@ JS
             ]
         ]
     ]); ?>
-    <?= $itemForm->field($menuItems, 'name')->textInput(['value' => '{{name}}', 'lang' => ($menuItems->locale ?? Yii::$app->language)]); ?>
-    <?= $itemForm->field($menuItems, 'title')->textInput(['value' => '{{title}}', 'lang' => ($menuItems->locale ?? Yii::$app->language)]); ?>
+    <?= $itemForm->field($menuItems, 'name')->textInput(['value' => '{{name}}']); ?>
+    <?= $itemForm->field($menuItems, 'title')->textInput(['value' => '{{title}}']); ?>
     <?= $itemForm->field($menuItems, 'source_url')->textInput(['value' => '{{source_url}}', 'autocomplete' => 'off']); ?>
     <?= $itemForm->field($menuItems, 'only_auth', [
         'template' => '{input} - {label}{error}',

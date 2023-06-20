@@ -1,11 +1,9 @@
 Changelog
 =========
 
-## 1.1.*
- * Show modal call fixed
- * Get menu items fixed
- * Lang attribute for HTML tags and inputs
- 
+## 1.2.0 (2023-06-20)
+ * Fix node sass, update dependencies and copyrights
+
 ## 1.1.1 (2021-02-05)
  * Migration error fixed
  

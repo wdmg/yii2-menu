@@ -7,10 +7,10 @@ namespace wdmg\menu\components;
  * Yii2 Menu
  *
  * @category        Component
- * @version         1.1.1
+ * @version         1.2.0
  * @author          Alexsander Vyshnyvetskyy <alex.vyshnyvetskyy@gmail.com>
  * @link            https://github.com/wdmg/yii2-menu
- * @copyright       Copyright (c) 2019 - 2021 W.D.M.Group, Ukraine
+ * @copyright       Copyright (c) 2019 - 2023 W.D.M.Group, Ukraine
  * @license         https://opensource.org/licenses/MIT Massachusetts Institute of Technology (MIT) License
  *
  */
@@ -98,7 +98,7 @@ class Menu extends Component
             $locale = Yii::$app->language;
 
         $items = $this->model->getItems($menuId, $locale, true, false);
-        if (is_countable($items)) {
+        if (is_array($items)) {
 
             $items = ArrayHelper::toArray($items, [
                 'wdmg\menu\models\MenuItems' => [

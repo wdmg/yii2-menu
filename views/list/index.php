@@ -156,7 +156,7 @@ if (isset(Yii::$app->translations) && class_exists('\wdmg\translations\FlagsAsse
                     }
 
 
-                    if (is_countable($output)) {
+                    if (is_array($output)) {
                         if (count($output) > 0) {
                             $onMore = false;
                             if (count($output) > 3)
@@ -254,7 +254,7 @@ if (isset(Yii::$app->translations) && class_exists('\wdmg\translations\FlagsAsse
                                         ]), ['list/view', 'id' => $data->id], [
                                             'data' => [
                                                 'toggle' => "modal",
-                                                'target' => "#menuPreviewModal",
+                                                'target' => "#menuPreview",
                                                 'pjax' => 0,
                                             ]
                                         ]);
@@ -264,7 +264,7 @@ if (isset(Yii::$app->translations) && class_exists('\wdmg\translations\FlagsAsse
                                         ]), ['list/view', 'id' => $data->id, 'locale' => $locale['locale']], [
                                             'data' => [
                                                 'toggle' => "modal",
-                                                'target' => "#menuPreviewModal",
+                                                'target' => "#menuPreview",
                                                 'pjax' => 0,
                                             ]
                                         ]);
@@ -286,7 +286,7 @@ if (isset(Yii::$app->translations) && class_exists('\wdmg\translations\FlagsAsse
                                         ]), ['list/view', 'id' => $data->id], [
                                             'data' => [
                                                 'toggle' => "modal",
-                                                'target' => "#menuPreviewModal",
+                                                'target' => "#menuPreview",
                                                 'pjax' => 0,
                                             ]
                                         ]);
@@ -296,7 +296,7 @@ if (isset(Yii::$app->translations) && class_exists('\wdmg\translations\FlagsAsse
                                         ]), ['list/view', 'id' => $data->id, 'locale' => $locale], [
                                             'data' => [
                                                 'toggle' => "modal",
-                                                'target' => "#menuPreviewModal",
+                                                'target' => "#menuPreview",
                                                 'pjax' => 0,
                                             ]
                                         ]);
@@ -305,7 +305,7 @@ if (isset(Yii::$app->translations) && class_exists('\wdmg\translations\FlagsAsse
                             }
                         }
 
-                        if (is_countable($output)) {
+                        if (is_array($output)) {
                             if (count($output) > 1) {
                                 $html = '';
                                 $html .= '<div class="btn-group">';
@@ -336,7 +336,7 @@ if (isset(Yii::$app->translations) && class_exists('\wdmg\translations\FlagsAsse
                                 'class' => 'btn btn-link btn-xs',
                                 'data' => [
                                     'toggle' => "modal",
-                                    'target' => "#menuPreviewModal",
+                                    'target' => "#menuPreview",
                                     'pjax' => 0,
                                 ]
                             ]
@@ -392,7 +392,7 @@ if (isset(Yii::$app->translations) && class_exists('\wdmg\translations\FlagsAsse
                             }
                         }
 
-                        if (is_countable($output)) {
+                        if (is_array($output)) {
                             if (count($output) > 1) {
                                 $html = '';
                                 $html .= '<div class="btn-group">';
@@ -486,7 +486,7 @@ if (isset(Yii::$app->translations) && class_exists('\wdmg\translations\FlagsAsse
                             }
                         }
 
-                        if (is_countable($output)) {
+                        if (is_array($output)) {
                             if (count($output) > 1) {
                                 $html = '';
                                 $html .= '<div class="btn-group">';
@@ -563,14 +563,11 @@ if (isset(Yii::$app->translations) && class_exists('\wdmg\translations\FlagsAsse
                             $(target).find('.modal-footer').remove();
                             $(target).find('.modal-content').append($(data).find('.modal-footer'));
                         }
-                        
                         if ($(target).find('button[type="submit"]').length > 0 && $(target).find('form').length > 0) {
                             $(target).find('button[type="submit"]').on('click', function(event) {
-                                event.preventDefault();
-                                $(target).find('form').submit();
+                              $(target).find('form').submit();
                             });
                         }
-                        
                         $(target).modal();
                     }
                 }  
@@ -581,7 +578,7 @@ JS
 ); ?>
 
 <?php Modal::begin([
-    'id' => 'menuPreviewModal',
+    'id' => 'menuPreview',
     'header' => '<h4 class="modal-title">'.Yii::t('app/modules/menu', 'Menu preview').'</h4>',
     'clientOptions' => [
         'show' => false

@@ -40,8 +40,6 @@ class MenuItems extends ActiveRecord
     const TYPE_BLOG_CATS = 4;
     const TYPE_MEDIA_CATS = 5;
 
-    public $locale;
-
     /**
      * {@inheritdoc}
      */

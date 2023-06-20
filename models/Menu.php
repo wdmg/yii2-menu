@@ -19,7 +19,7 @@ use wdmg\menu\models\MenuItems;
  *
  * @property int $id
  * @property int $source_id
- * @property string $name
+ * @property string $title
  * @property string $description
  * @property string $alias
  * @property int $status
@@ -134,6 +134,15 @@ class Menu extends ActiveRecordML
             'updated_at' => Yii::t('app/modules/menu', 'Updated at'),
             'updated_by' => Yii::t('app/modules/menu', 'Updated by'),
         ];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function afterFind()
+    {
+        $this->items = self::getItems($this->id, $this->locale, false, true);
+        parent::afterFind();
     }
 
     /**
@@ -282,17 +291,14 @@ class Menu extends ActiveRecordML
      * @return array|false|string|\yii\db\ActiveRecord[]
      */
     public function getItems($menu_id = null, $locale = null, $published = false, $asJson = false)
-    {
-        if (!$locale && ($this->locale && $this->source_id))
-            $locale = $this->locale;
+        {
 
-        $items = MenuItems::find();
         if (is_int($menu_id))
-            $items->where(['menu_id' => $menu_id]);
+            $items = MenuItems::find()->where(['menu_id' => $menu_id]);
         else if (is_string($menu_id))
-            $items->where(['alias' => $menu_id]);
+            $items = MenuItems::find()->where(['alias' => $menu_id]);
         else
-            $items->where(['menu_id' => $this->id]);
+            $items = MenuItems::find()->where(['menu_id' => $this->id]);
 
         $items->joinWith('menu');
 
@@ -329,7 +335,6 @@ class Menu extends ActiveRecordML
                             'id' => $item->id,
                             'name' => $item->name,
                             'title' => $item->title,
-                            'locale' => ($item->locale ?? null),
                             'url' => $item->url
                         ];
                     }
