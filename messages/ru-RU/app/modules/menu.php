@@ -69,6 +69,7 @@ return [
     '&larr; Back to list' => "&larr; Назад к списку",
 
     'Add menu items from the right column.' => "Добавьте элементы меню из столбца справа.",
+    'The value of field `{attribute}` must be a valid JSON, error: {error}.' => "Значение поля `{attribute}` должно быть валидным JSON-значением, ошибка: {error}.",
 
     'Menu has been successfully added!' => "Меню было успешно добавлено!",
     'An error occurred while add the menu.' => "Произошла ошибка при добавлении меню.",

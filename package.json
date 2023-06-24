@@ -1,6 +1,6 @@
 {
   "name": "yii2-menu",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Menu module assets",
   "scripts": {
     "start": "gulp",

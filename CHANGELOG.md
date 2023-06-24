@@ -1,6 +1,9 @@
 Changelog
 =========
 
+## 1.2.1 (2023-06-24)
+ * Fix nav menu
+
 ## 1.2.0 (2023-06-20)
  * Fix node sass, update dependencies and copyrights
 

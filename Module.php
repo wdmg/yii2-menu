@@ -6,7 +6,7 @@ namespace wdmg\menu;
  * Yii2 Menu module
  *
  * @category        Module
- * @version         1.2.0
+ * @version         1.2.1
  * @author          Alexsander Vyshnyvetskyy <alex.vyshnyvetskyy@gmail.com>
  * @link            https://github.com/wdmg/yii2-menu
  * @copyright       Copyright (c) 2019 - 2023 W.D.M.Group, Ukraine
@@ -14,6 +14,7 @@ namespace wdmg\menu;
  *
  */
 
+use wdmg\helpers\ArrayHelper;
 use Yii;
 use wdmg\base\BaseModule;
 use yii\base\InvalidConfigException;
@@ -61,7 +62,7 @@ class Module extends BaseModule
     /**
      * @var string the module version
      */
-    private $version = "1.2.0";
+    private $version = "1.2.1";
 
     /**
      * @var integer, priority of initialization
@@ -93,7 +94,7 @@ class Module extends BaseModule
     /**
      * {@inheritdoc}
      */
-    public function dashboardNavItems($options = false)
+    public function dashboardNavItems($options = null)
     {
         $items = [
             'label' => $this->name,
@@ -102,7 +103,20 @@ class Module extends BaseModule
             'active' => in_array(\Yii::$app->controller->module->id, [$this->id])
         ];
 
-        return $items;
+
+	    if (!is_null($options)) {
+
+		    if (isset($options['count'])) {
+			    $items['label'] .= '<span class="badge badge-default float-right">' . $options['count'] . '</span>';
+			    unset($options['count']);
+		    }
+
+		    if (is_array($options))
+			    $items = ArrayHelper::merge($items, $options);
+
+	    }
+
+	    return $items;
     }
 
     /**
